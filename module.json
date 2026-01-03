@@ -47,7 +47,7 @@
   ],
   "url": "https://github.com/Kikimor-rec/mosh-journal-enhancer",
   "manifest": "https://github.com/Kikimor-rec/mosh-journal-enhancer/releases/latest/download/module.json",
-  "download": "https://github.com/Kikimor-rec/mosh-journal-enhancer/releases/download/#{VERSION}#/mosh-journal-enhancer.zip",
+  "download": "https://github.com/Kikimor-rec/mosh-journal-enhancer/releases/download/v#{VERSION}#/mosh-journal-enhancer-v#{VERSION}#.zip",
   "bugs": "https://github.com/Kikimor-rec/mosh-journal-enhancer/issues",
   "changelog": "https://github.com/Kikimor-rec/mosh-journal-enhancer/blob/main/CHANGELOG.md",
   "readme": "https://github.com/Kikimor-rec/mosh-journal-enhancer/blob/main/README.md"

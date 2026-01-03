@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
       - name: Checkout
@@ -19,15 +21,17 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "Building version $VERSION"
+          echo "ZIP_NAME=mosh-journal-enhancer-v$VERSION.zip" >> $GITHUB_ENV
+          echo "RELEASE_DOWNLOAD_URL=https://github.com/${{ github.repository }}/releases/download/v$VERSION/mosh-journal-enhancer-v$VERSION.zip" >> $GITHUB_ENV
 
-      - name: Update module.json version
+      - name: Update module.json version and download URL
         run: |
           sed -i 's/#{VERSION}#/${{ steps.get_version.outputs.VERSION }}/g' module.json
+          cat module.json
 
       - name: Create release archive
         run: |
-          mkdir -p release
-          zip -r release/mosh-journal-enhancer.zip \
+          zip -r ${{ env.ZIP_NAME }} \
             module.json \
             README.md \
             CHANGELOG.md \
@@ -36,22 +40,24 @@ jobs:
             scripts/ \
             styles/ \
             templates/ \
+            docs/ \
             -x "*.git*" \
-            -x "*.github*" \
-            -x "*temp/*" \
-            -x "*.log"
+            -x "*node_modules/*"
 
-      - name: Copy module.json to release
-        run: cp module.json release/module.json
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+      - name: Update Release with Files
+        uses: ncipollo/release-action@v1
         with:
-          files: |
-            release/mosh-journal-enhancer.zip
-            release/module.json
-          generate_release_notes: true
+          allowUpdates: true
+          name: v${{ steps.get_version.outputs.VERSION }}
           draft: false
           prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: './module.json, ./${{ env.ZIP_NAME }}'
+          tag: v${{ steps.get_version.outputs.VERSION }}
+          generateReleaseNotes: true
+          body: |
+            ## Installation
+            
+            **Manifest URL:** `https://github.com/${{ github.repository }}/releases/download/v${{ steps.get_version.outputs.VERSION }}/module.json`
+            
+            Or use the latest manifest: `https://github.com/${{ github.repository }}/releases/latest/download/module.json`
