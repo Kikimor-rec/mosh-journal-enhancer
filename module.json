@@ -1,0 +1,54 @@
+{
+  "id": "mosh-journal-enhancer",
+  "title": "MOSH Journal Enhancer",
+  "description": "Enhanced journals for Mothership RPG: actor/item embeds with statblocks and bio cards, custom formatting blocks (narrative, terminal, warnings, tips).",
+  "version": "#{VERSION}#",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "authors": [
+    {
+      "name": "kikimor_rec",
+      "url": "https://github.com/Kikimor-rec",
+      "discord": "kikimor_rec"
+    }
+  ],
+  "relationships": {
+    "systems": [
+      {
+        "id": "mosh",
+        "type": "system",
+        "manifest": "https://github.com/Futil/foundry-mothership/releases/latest/download/system.json",
+        "compatibility": {
+          "minimum": "0.1.0"
+        }
+      }
+    ]
+  },
+  "esmodules": [
+    "scripts/main.js"
+  ],
+  "styles": [
+    "styles/mosh-embeds.css",
+    "styles/mosh-blocks.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "ru",
+      "name": "Russian",
+      "path": "lang/ru.json"
+    }
+  ],
+  "url": "https://github.com/Kikimor-rec/mosh-journal-enhancer",
+  "manifest": "https://github.com/Kikimor-rec/mosh-journal-enhancer/releases/latest/download/module.json",
+  "download": "https://github.com/Kikimor-rec/mosh-journal-enhancer/releases/download/#{VERSION}#/mosh-journal-enhancer.zip",
+  "bugs": "https://github.com/Kikimor-rec/mosh-journal-enhancer/issues",
+  "changelog": "https://github.com/Kikimor-rec/mosh-journal-enhancer/blob/main/CHANGELOG.md",
+  "readme": "https://github.com/Kikimor-rec/mosh-journal-enhancer/blob/main/README.md"
+}

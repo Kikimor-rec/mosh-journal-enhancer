@@ -1,0 +1,57 @@
+name: Release Module
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building version $VERSION"
+
+      - name: Update module.json version
+        run: |
+          sed -i 's/#{VERSION}#/${{ steps.get_version.outputs.VERSION }}/g' module.json
+
+      - name: Create release archive
+        run: |
+          mkdir -p release
+          zip -r release/mosh-journal-enhancer.zip \
+            module.json \
+            README.md \
+            CHANGELOG.md \
+            LICENSE \
+            lang/ \
+            scripts/ \
+            styles/ \
+            templates/ \
+            -x "*.git*" \
+            -x "*.github*" \
+            -x "*temp/*" \
+            -x "*.log"
+
+      - name: Copy module.json to release
+        run: cp module.json release/module.json
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            release/mosh-journal-enhancer.zip
+            release/module.json
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

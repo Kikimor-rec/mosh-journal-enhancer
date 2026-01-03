@@ -1,0 +1,919 @@
+﻿/* ============================================= */
+/* MOSH JOURNAL EMBEDS v2.1                     */
+/* Matching Mothership RPG System Styles        */
+/* ============================================= */
+
+/* ============================================= */
+/* 1. FONT IMPORTS                              */
+/* ============================================= */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+/* ============================================= */
+/* 2. CSS CUSTOM PROPERTIES (VARIABLES)         */
+/* ============================================= */
+
+/* Light Theme (Default) */
+:root {
+    /* Core Colors */
+    --mosh-bg: #ffffff;
+    --mosh-bg-card: #fafafa;
+    --mosh-fg: #111111;
+    --mosh-fg-secondary: #555555;
+    --mosh-border: #111111;
+    --mosh-border-light: #cccccc;
+    --mosh-dim: #eeeeee;
+    --mosh-dim-hover: #dddddd;
+
+    /* Accent Colors */
+    --mosh-accent-bg: #111111;
+    --mosh-accent-fg: #ffffff;
+    --mosh-accent-hover: #333333;
+
+    /* Special Colors */
+    --mosh-yellow: #FFFF00;
+    --mosh-red: #aa0200;
+    --mosh-green: #18520b;
+    --mosh-grey: #888888;
+
+    /* Typography */
+    --mosh-font-primary: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    --mosh-font-mono: 'Roboto Mono', monospace;
+
+    /* Spacing */
+    --mosh-padding-sm: 5px;
+    --mosh-padding-md: 10px;
+    --mosh-padding-lg: 20px;
+
+    /* Borders */
+    --mosh-radius-sm: 3px;
+    --mosh-radius-md: 6px;
+    --mosh-radius-pill: 21px;
+    --mosh-radius-circle: 50%;
+
+    /* Shadows */
+    --mosh-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    --mosh-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================= */
+/* 3. BASE CARD STYLES                          */
+/* ============================================= */
+
+/* Base card - LIGHT theme as default */
+.mosh-embed-card {
+    /* Light theme defaults */
+    --mosh-bg: #ffffff;
+    --mosh-bg-card: #fafafa;
+    --mosh-fg: #111111;
+    --mosh-fg-secondary: #555555;
+    --mosh-border: #111111;
+    --mosh-border-light: #cccccc;
+    --mosh-dim: #eeeeee;
+    --mosh-dim-hover: #dddddd;
+    --mosh-accent-bg: #111111;
+    --mosh-accent-fg: #ffffff;
+    --mosh-accent-hover: #333333;
+    --mosh-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    --mosh-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+    background-color: var(--mosh-bg);
+    color: var(--mosh-fg);
+    border: 3px solid var(--mosh-border);
+    border-radius: var(--mosh-radius-md);
+    padding: var(--mosh-padding-md) var(--mosh-padding-lg);
+    margin: 12px 0;
+    font-family: var(--mosh-font-primary);
+    font-size: 14px;
+    line-height: 1.5;
+    box-shadow: var(--mosh-shadow);
+    max-width: 100%;
+    box-sizing: border-box;
+    transition: box-shadow 0.2s ease;
+}
+
+.mosh-embed-card:hover {
+    box-shadow: var(--mosh-shadow-hover);
+}
+
+/* Compact mode */
+.mosh-embed-card.compact {
+    padding: var(--mosh-padding-sm) var(--mosh-padding-md);
+}
+
+/* ============================================= */
+/* 4. DARK THEME OVERRIDE                       */
+/* ============================================= */
+
+/* 
+ * Dark theme - Foundry V13 uses:
+ * - .theme-dark / .theme-light classes on body and ApplicationV2 windows
+ * - .dark class on older journal sheets
+ * Must come AFTER base .mosh-embed-card to override variables
+ */
+
+/* Foundry V13 ApplicationV2 theme classes */
+.theme-dark .mosh-embed-card,
+body.theme-dark .mosh-embed-card,
+.application.theme-dark .mosh-embed-card,
+
+/* Legacy .dark class for older journal sheets */
+.journal-sheet.dark .mosh-embed-card,
+.app.dark .mosh-embed-card,
+.window-app.dark .mosh-embed-card,
+.journal-entry-content.dark .mosh-embed-card,
+.journal-entry-pages.dark .mosh-embed-card,
+.journal-entry-page.dark .mosh-embed-card,
+.journal-page-content.dark .mosh-embed-card,
+.ProseMirror.dark .mosh-embed-card,
+.editor-content.dark .mosh-embed-card,
+
+/* Direct dark content areas */
+.dark .mosh-embed-card,
+[data-color-scheme="dark"] .mosh-embed-card {
+    --mosh-bg: #1a1a1a;
+    --mosh-bg-card: #222222;
+    --mosh-fg: #e0e0e0;
+    --mosh-fg-secondary: #aaaaaa;
+    --mosh-border: #666666;
+    --mosh-border-light: #444444;
+    --mosh-dim: #2d2d2d;
+    --mosh-dim-hover: #3a3a3a;
+    --mosh-accent-bg: #e0e0e0;
+    --mosh-accent-fg: #111111;
+    --mosh-accent-hover: #ffffff;
+    --mosh-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --mosh-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================= */
+/* 4b. LIGHT THEME (EXPLICIT)                   */
+/* ============================================= */
+
+/* 
+ * Explicitly reinforce light theme when .theme-light is set
+ * This ensures dark doesn't leak through
+ */
+.theme-light .mosh-embed-card,
+body.theme-light .mosh-embed-card,
+.application.theme-light .mosh-embed-card,
+[data-color-scheme="light"] .mosh-embed-card {
+    --mosh-bg: #ffffff;
+    --mosh-bg-card: #fafafa;
+    --mosh-fg: #111111;
+    --mosh-fg-secondary: #555555;
+    --mosh-border: #111111;
+    --mosh-border-light: #cccccc;
+    --mosh-dim: #eeeeee;
+    --mosh-dim-hover: #dddddd;
+    --mosh-accent-bg: #111111;
+    --mosh-accent-fg: #ffffff;
+    --mosh-accent-hover: #333333;
+    --mosh-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    --mosh-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================= */
+/* 5. HEADER STYLES                             */
+/* ============================================= */
+
+.mosh-embed-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 3px solid var(--mosh-border);
+    padding-bottom: var(--mosh-padding-md);
+    margin-bottom: var(--mosh-padding-md);
+}
+
+.mosh-embed-img {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    object-fit: cover;
+    border: 3px solid var(--mosh-border);
+    border-radius: var(--mosh-radius-sm);
+    background: var(--mosh-dim);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mosh-embed-img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.mosh-embed-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.mosh-embed-title a,
+.mosh-embed-title .content-link {
+    background-color: var(--mosh-accent-bg);
+    color: var(--mosh-accent-fg) !important;
+    font-size: 1.4em;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-decoration: none !important;
+    padding: 6px 14px;
+    border-radius: var(--mosh-radius-pill);
+    display: inline-block;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    letter-spacing: 0.5px;
+}
+
+.mosh-embed-title a:hover,
+.mosh-embed-title .content-link:hover {
+    background-color: var(--mosh-accent-hover);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Class Badge */
+.mosh-class-badge {
+    background: var(--mosh-dim);
+    color: var(--mosh-fg);
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border: 2px solid var(--mosh-border);
+    border-radius: var(--mosh-radius-pill);
+}
+
+/* ============================================= */
+/* 6. SECTION HEADERS                           */
+/* ============================================= */
+
+.mosh-section-header {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    letter-spacing: 1px;
+    color: var(--mosh-fg-secondary);
+    border-bottom: 2px solid var(--mosh-border);
+    padding-bottom: 4px;
+    margin: 16px 0 10px 0;
+}
+
+.mosh-bio-list-header {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75em;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--mosh-border-light);
+    margin: 14px 0 8px 0;
+    padding-bottom: 4px;
+    color: var(--mosh-fg-secondary);
+}
+
+/* Bio info line */
+.mosh-bio-info {
+    display: flex;
+    gap: 12px;
+    font-size: 0.9em;
+    color: var(--mosh-fg-secondary);
+    margin-bottom: 10px;
+}
+
+/* Credits Badge */
+.mosh-credits-badge {
+    background: var(--mosh-yellow);
+    color: #111111;
+    font-size: 0.85em;
+    font-weight: 700;
+    padding: 6px 14px;
+    border: 3px solid #111111;
+    border-radius: var(--mosh-radius-pill);
+    text-align: center;
+    margin-top: 12px;
+    display: inline-block;
+}
+
+.mosh-credits-inline {
+    background: var(--mosh-yellow);
+    color: #111111;
+    font-weight: 700;
+    padding: 2px 8px;
+    border: 2px solid #111111;
+    border-radius: var(--mosh-radius-pill);
+    font-size: 0.9em;
+}
+
+/* ============================================= */
+/* 7. STAT GRID - THE BUBBLES                   */
+/* ============================================= */
+
+.mosh-stat-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 6px 0;
+}
+
+.mosh-stat-grid.bio-stats {
+    justify-content: flex-start;
+}
+
+/* Individual Stat Cell */
+.mosh-stat-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 55px;
+}
+
+/* Stat Label (STR, SPD) */
+.mosh-stat-cell .label {
+    font-size: 0.7em;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--mosh-fg-secondary);
+    margin-bottom: 3px;
+    letter-spacing: 0.5px;
+}
+
+/* Stat Value (36, 42) - Circular Bubble */
+.mosh-stat-cell .value {
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--mosh-fg);
+    border: 4px solid var(--mosh-border);
+    border-radius: var(--mosh-radius-circle);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--mosh-bg);
+    line-height: 1;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Clickable stats */
+.mosh-stat-cell.clickable .value,
+.mosh-stat-item.clickable {
+    cursor: pointer;
+}
+
+.mosh-stat-cell.clickable .value:hover,
+.mosh-stat-item.clickable:hover {
+    background: var(--mosh-dim);
+    transform: scale(1.05);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Rectangular stat value for vitals */
+.mosh-stat-cell .value.rect {
+    border-radius: var(--mosh-radius-sm);
+    width: auto;
+    min-width: 40px;
+    padding: 0 10px;
+}
+
+/* ============================================= */
+/* 8. CREATURE STATS STRIP                      */
+/* ============================================= */
+
+.mosh-creature-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 2px solid var(--mosh-border);
+    margin-bottom: 10px;
+}
+
+.mosh-creature-stat {
+    background: var(--mosh-accent-bg);
+    color: var(--mosh-accent-fg);
+    font-weight: 700;
+    font-size: 1em;
+    padding: 6px 14px;
+    border-radius: var(--mosh-radius-pill);
+    font-family: var(--mosh-font-mono);
+}
+
+.mosh-creature-stat.clickable {
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mosh-creature-stat.clickable:hover {
+    background: var(--mosh-accent-hover);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================= */
+/* 9. TAG LISTS (Skills/Gear)                   */
+/* ============================================= */
+
+.mosh-tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.mosh-tag {
+    background: var(--mosh-dim);
+    border: 1px solid var(--mosh-border-light);
+    color: var(--mosh-fg);
+    padding: 4px 10px;
+    font-size: 0.85em;
+    font-weight: 500;
+    border-radius: var(--mosh-radius-pill);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+/* Skill tags - pill style matching system */
+.mosh-tag.skill {
+    background: var(--mosh-accent-bg);
+    color: var(--mosh-accent-fg);
+    border-color: var(--mosh-accent-bg);
+}
+
+/* Gear tags - clickable */
+.mosh-tag.gear {
+    cursor: pointer;
+}
+
+.mosh-tag.gear:hover {
+    background: var(--mosh-accent-bg);
+    color: var(--mosh-accent-fg);
+    border-color: var(--mosh-accent-bg);
+}
+
+.mosh-tag .tag-rank,
+.mosh-tag .tag-qty {
+    opacity: 0.75;
+    font-size: 0.9em;
+}
+
+/* ============================================= */
+/* 10. SHIP VITALS - BOX STYLE                  */
+/* ============================================= */
+
+.mosh-ship-vitals.box-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.vital-box {
+    flex: 1;
+    min-width: 80px;
+    display: flex;
+    flex-direction: column;
+    border: 3px solid var(--mosh-border);
+    border-radius: var(--mosh-radius-sm);
+    overflow: hidden;
+}
+
+.vital-box .label {
+    width: 100%;
+    background: var(--mosh-dim);
+    color: var(--mosh-fg);
+    font-weight: 700;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 5px 0;
+    letter-spacing: 0.5px;
+}
+
+.vital-box .value {
+    width: 100%;
+    background: var(--mosh-accent-bg);
+    color: var(--mosh-accent-fg);
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: 700;
+    padding: 10px 0;
+}
+
+/* ============================================= */
+/* 11. ITEM LIST                                */
+/* ============================================= */
+
+.mosh-item-list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+}
+
+.mosh-item-entry,
+.mosh-ability-entry {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--mosh-border-light);
+    font-size: 0.95em;
+}
+
+.mosh-item-entry:last-child,
+.mosh-ability-entry:last-child {
+    border-bottom: none;
+}
+
+.mosh-item-name,
+.mosh-ability-name {
+    font-weight: 600;
+    flex: 1;
+}
+
+.mosh-item-damage,
+.mosh-ability-desc {
+    font-family: var(--mosh-font-mono);
+    font-size: 0.9em;
+    color: var(--mosh-fg-secondary);
+}
+
+/* Roll Button */
+.mosh-roll-btn {
+    background: var(--mosh-accent-bg);
+    color: var(--mosh-accent-fg);
+    border: none;
+    border-radius: var(--mosh-radius-pill);
+    padding: 4px 10px;
+    font-size: 0.8em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mosh-roll-btn:hover {
+    background: var(--mosh-accent-hover);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================= */
+/* 12. SHIP INVENTORY                           */
+/* ============================================= */
+
+.mosh-ship-content .mosh-section-header {
+    margin-top: 12px;
+}
+
+.mosh-inventory {
+    border: 2px solid var(--mosh-border);
+    border-top: none;
+    border-radius: 0 0 var(--mosh-radius-sm) var(--mosh-radius-sm);
+    background: var(--mosh-bg-card);
+    overflow: hidden;
+}
+
+.mosh-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--mosh-border-light);
+    font-size: 0.9em;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.mosh-item-row:last-child {
+    border-bottom: none;
+}
+
+.mosh-item-row.clickable {
+    cursor: pointer;
+}
+
+.mosh-item-row.clickable:hover {
+    background: var(--mosh-accent-bg);
+    color: var(--mosh-accent-fg);
+}
+
+.mosh-item-row .item-name {
+    font-weight: 600;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 12px;
+}
+
+.mosh-item-row .item-stats {
+    font-family: var(--mosh-font-mono);
+    font-size: 0.9em;
+    opacity: 0.8;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Ship Make */
+.mosh-ship-make {
+    font-style: italic;
+    color: var(--mosh-fg-secondary);
+    margin-bottom: 10px;
+}
+
+/* ============================================= */
+/* 13. ITEM CARD STYLES                         */
+/* ============================================= */
+
+.mosh-item-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 3px solid var(--mosh-border);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+}
+
+.mosh-item-img {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px;
+    object-fit: cover;
+    border: 2px solid var(--mosh-border);
+    border-radius: var(--mosh-radius-sm);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.mosh-item-img:hover {
+    transform: scale(1.1);
+}
+
+.mosh-item-title {
+    font-weight: 700;
+    font-size: 1.1em;
+    flex: 1;
+}
+
+.mosh-item-cost {
+    background: var(--mosh-accent-bg);
+    color: var(--mosh-accent-fg);
+    padding: 4px 10px;
+    font-weight: 700;
+    font-size: 0.85em;
+    border-radius: var(--mosh-radius-pill);
+}
+
+.mosh-item-body {
+    font-size: 0.95em;
+}
+
+/* Item Stats - Inline Style */
+.mosh-stat-grid.item-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.mosh-stat-grid.item-stats .mosh-stat-cell {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: auto;
+    min-width: unset;
+    background: var(--mosh-dim);
+    border: 1px solid var(--mosh-border-light);
+    border-radius: var(--mosh-radius-pill);
+    padding: 4px 12px;
+}
+
+.mosh-stat-grid.item-stats .mosh-stat-cell .label {
+    margin: 0 6px 0 0;
+    font-size: 0.85em;
+}
+
+.mosh-stat-grid.item-stats .mosh-stat-cell .value {
+    background: transparent;
+    border: none;
+    width: auto;
+    height: auto;
+    font-size: 0.95em;
+    padding: 0;
+    min-width: unset;
+}
+
+/* Item Description */
+.mosh-item-description {
+    margin-top: 8px;
+    line-height: 1.6;
+}
+
+.mosh-item-description p {
+    margin: 0 0 8px 0;
+}
+
+/* ============================================= */
+/* 14. BODY & DESCRIPTION AREA                  */
+/* ============================================= */
+
+.mosh-embed-body {
+    margin-top: 12px;
+    border-top: 1px solid var(--mosh-border-light);
+    padding-top: 10px;
+    line-height: 1.6;
+}
+
+.mosh-embed-body p {
+    margin: 0 0 10px 0;
+}
+
+.mosh-embed-body p:last-child {
+    margin-bottom: 0;
+}
+
+/* ============================================= */
+/* 15. COMPACT/TOGGLE FUNCTIONALITY             */
+/* ============================================= */
+
+.mosh-embed-toggle {
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.85em;
+    padding-top: 10px;
+    margin-top: 10px;
+    border-top: 1px dotted var(--mosh-border-light);
+    cursor: pointer;
+    color: var(--mosh-fg-secondary);
+    transition: color 0.2s ease;
+}
+
+.mosh-embed-toggle:hover {
+    color: var(--mosh-fg);
+}
+
+.mosh-embed-card.compact .mosh-embed-body {
+    max-height: 100px;
+    overflow: hidden;
+    position: relative;
+}
+
+.mosh-embed-card.compact .mosh-embed-body::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(transparent, var(--mosh-bg));
+    pointer-events: none;
+}
+
+.mosh-bio-content {
+    max-height: 150px;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.mosh-bio-content.expanded {
+    max-height: none;
+}
+
+/* ============================================= */
+/* 16. CHARACTER STAT ITEMS (Alternative)       */
+/* ============================================= */
+
+.mosh-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 10px;
+    background: var(--mosh-dim);
+    border: 2px solid var(--mosh-border);
+    border-radius: var(--mosh-radius-sm);
+    transition: all 0.2s ease;
+}
+
+.mosh-stat-label {
+    font-size: 0.7em;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--mosh-fg-secondary);
+    margin-bottom: 2px;
+}
+
+.mosh-stat-value {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: var(--mosh-fg);
+}
+
+/* ============================================= */
+/* 17. RESPONSIVE ADJUSTMENTS                   */
+/* ============================================= */
+
+@media (max-width: 400px) {
+    .mosh-embed-card {
+        padding: var(--mosh-padding-sm) var(--mosh-padding-md);
+    }
+
+    .mosh-embed-header {
+        flex-wrap: wrap;
+    }
+
+    .mosh-embed-img {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+    }
+
+    .mosh-embed-title a,
+    .mosh-embed-title .content-link {
+        font-size: 1.1em;
+        padding: 4px 10px;
+    }
+
+    .mosh-stat-cell .value {
+        width: 42px;
+        height: 42px;
+        font-size: 1.2em;
+        border-width: 3px;
+    }
+
+    .mosh-creature-stat {
+        padding: 4px 10px;
+        font-size: 0.9em;
+    }
+
+    .mosh-ship-vitals.box-row {
+        flex-direction: column;
+    }
+}
+
+/* ============================================= */
+/* 18. PRINT STYLES                             */
+/* ============================================= */
+
+@media print {
+    .mosh-embed-card {
+        box-shadow: none;
+        border-width: 2px;
+        page-break-inside: avoid;
+    }
+
+    .mosh-embed-toggle {
+        display: none;
+    }
+
+    .mosh-embed-card.compact .mosh-embed-body {
+        max-height: none;
+    }
+
+    .mosh-embed-card.compact .mosh-embed-body::after {
+        display: none;
+    }
+}
+
+/* ============================================= */
+/* 19. ACCESSIBILITY                            */
+/* ============================================= */
+
+.mosh-embed-card *:focus {
+    outline: 2px solid var(--mosh-accent-bg);
+    outline-offset: 2px;
+}
+
+.mosh-embed-card [role="button"]:focus,
+.mosh-embed-card button:focus {
+    outline: 2px solid var(--mosh-accent-bg);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .mosh-embed-card {
+        border-width: 4px;
+    }
+
+    .mosh-stat-cell .value {
+        border-width: 5px;
+    }
+
+    .mosh-tag {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .mosh-embed-card,
+    .mosh-embed-card *,
+    .mosh-embed-card *::before,
+    .mosh-embed-card *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+
+
+
+
+
+

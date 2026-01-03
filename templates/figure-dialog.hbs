@@ -1,0 +1,59 @@
+<div class="mosh-figure-dialog">
+    <div class="form-group">
+        <label>{{localize "MOSH.Figure.Browse"}}</label>
+        <div class="image-select">
+            <input type="text" class="figure-path" placeholder="{{localize "MOSH.Figure.PathPlaceholder"}}" value="">
+            <button type="button" class="browse-btn">
+                <i class="fas fa-folder-open"></i> {{localize "MOSH.Figure.Browse"}}
+            </button>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>{{localize "MOSH.Figure.Position"}}</label>
+        <select class="figure-position">
+            <option value="">{{localize "MOSH.Figure.Inline"}}</option>
+            <option value="left">{{localize "MOSH.Figure.Left"}}</option>
+            <option value="right">{{localize "MOSH.Figure.Right"}}</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label>{{localize "MOSH.Figure.Size"}}</label>
+        <select class="figure-size">
+            <option value="small">{{localize "MOSH.Figure.Small"}}</option>
+            <option value="medium" selected>{{localize "MOSH.Figure.Medium"}}</option>
+            <option value="large">{{localize "MOSH.Figure.Large"}}</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label>{{localize "MOSH.Figure.Style"}}</label>
+        <select class="figure-style">
+            <option value="">{{localize "MOSH.Figure.Default"}}</option>
+            <option value="polaroid">{{localize "MOSH.Figure.Polaroid"}}</option>
+            <option value="screen">{{localize "MOSH.Figure.Screen"}}</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label>{{localize "MOSH.Figure.Caption"}}</label>
+        <input type="text" class="figure-caption" placeholder="{{localize "MOSH.Figure.CaptionPlaceholder"}}">
+    </div>
+    
+    <div class="form-group">
+        <label>{{localize "MOSH.Dialog.Preview"}}</label>
+        <div class="mosh-figure-preview">
+            <div class="placeholder">{{localize "MOSH.Figure.NoImage"}}</div>
+        </div>
+    </div>
+    
+    <div class="form-group button-row">
+        <button type="button" class="insert-btn">
+            <i class="fas fa-check"></i> {{localize "MOSH.Dialog.Insert"}}
+        </button>
+        <button type="button" class="cancel-btn">
+            <i class="fas fa-times"></i> {{localize "MOSH.Dialog.Cancel"}}
+        </button>
+    </div>
+</div>

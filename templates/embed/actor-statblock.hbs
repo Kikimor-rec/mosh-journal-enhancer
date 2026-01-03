@@ -1,0 +1,188 @@
+<section class="mosh-embed-card mosh-embed-statblock {{#if config.compact}}compact{{/if}}">
+    <header class="mosh-embed-header">
+        <img src="{{actor.img}}" class="mosh-embed-img open-sheet" title="{{localize 'MOSH.Embeds.OpenSheet'}}" alt="{{actor.name}}" />
+        <div class="mosh-embed-title">
+            {{{enrichedLink}}}
+        </div>
+        {{#if system.class.value}}
+        <div class="mosh-class-badge">{{system.class.value}}</div>
+        {{else}}
+        {{#if system.class}}
+        <div class="mosh-class-badge">{{system.class}}</div>
+        {{/if}}
+        {{/if}}
+    </header>
+
+    {{#if isCreature}}
+    {{!-- ======================== --}}
+    {{!-- CREATURE LAYOUT (Strip)  --}}
+    {{!-- ======================== --}}
+    
+    <div class="mosh-creature-stats">
+        <span class="mosh-creature-stat">
+            C:{{system.stats.combat.value}}
+        </span>
+        <span class="mosh-creature-stat">
+            I:{{system.stats.instinct.value}}
+        </span>
+        <span class="mosh-creature-stat">
+            {{#if isFirstEdition}}W{{else}}H{{/if}}:{{system.hits.max}}({{system.health.max}})
+        </span>
+        <span class="mosh-creature-stat">
+            AP:{{system.stats.armor.value}}
+        </span>
+    </div>
+
+    {{!-- Creature Attacks/Items --}}
+    {{#if actor.items.size}}
+    <ul class="mosh-item-list">
+        {{#each actor.items as |item|}}
+        {{#if (or (eq item.type "weapon") (eq item.type "armor") (eq item.type "item") (eq item.type "attack"))}}
+        <li class="mosh-ability-entry">
+            <span class="mosh-ability-name">{{item.name}}</span>
+
+            {{#if (eq item.type "weapon")}}
+            <span class="mosh-ability-desc">{{item.system.damage}} {{localize "MOSH.Dmg"}}</span>
+            {{/if}}
+
+            {{#if (eq item.type "attack")}}
+            <span class="mosh-ability-desc">{{item.system.damage}}</span>
+            {{/if}}
+
+            {{#if (eq item.type "armor")}}
+            <span class="mosh-ability-desc">AP:{{item.system.armorPoints}} DR:{{item.system.damageReduction}}</span>
+            {{/if}}
+        </li>
+        {{/if}}
+        {{/each}}
+    </ul>
+    {{/if}}
+
+    {{else}}
+    {{!-- ======================== --}}
+    {{!-- CHARACTER LAYOUT (Grid)  --}}
+    {{!-- ======================== --}}
+
+    {{!-- Core Stats --}}
+    <div class="mosh-section-header">{{localize "MOSH.Embeds.Stats"}}</div>
+    <div class="mosh-stat-grid">
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Strength"}}</span>
+            <span class="value">{{system.stats.strength.value}}</span>
+        </div>
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Speed"}}</span>
+            <span class="value">{{system.stats.speed.value}}</span>
+        </div>
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Intellect"}}</span>
+            <span class="value">{{system.stats.intellect.value}}</span>
+        </div>
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Combat"}}</span>
+            <span class="value">{{system.stats.combat.value}}</span>
+        </div>
+    </div>
+
+    {{!-- Saves --}}
+    <div class="mosh-section-header">{{localize "MOSH.Embeds.Saves"}}</div>
+    <div class="mosh-stat-grid">
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Sanity"}}</span>
+            <span class="value">{{system.stats.sanity.value}}</span>
+        </div>
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Fear"}}</span>
+            <span class="value">{{system.stats.fear.value}}</span>
+        </div>
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Body"}}</span>
+            <span class="value">{{system.stats.body.value}}</span>
+        </div>
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Armor"}}</span>
+            <span class="value">{{system.stats.armor.value}}</span>
+        </div>
+    </div>
+
+    {{!-- Health / Wounds / Stress --}}
+    {{#if system.health}}
+    <div class="mosh-section-header">{{localize "MOSH.Embeds.Vitals"}}</div>
+    <div class="mosh-stat-grid bio-stats">
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Health"}}</span>
+            <span class="value rect">{{system.health.value}}/{{system.health.max}}</span>
+        </div>
+        {{#if system.wounds}}
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Wounds"}}</span>
+            <span class="value rect">{{system.wounds.value}}/{{system.wounds.max}}</span>
+        </div>
+        {{/if}}
+        {{#if system.hits}}
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Wounds"}}</span>
+            <span class="value rect">{{system.hits.value}}/{{system.hits.max}}</span>
+        </div>
+        {{/if}}
+        {{#if (or system.other.stress system.stress)}}
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Stress"}}</span>
+            <span class="value rect">
+                {{#if system.other.stress}}{{system.other.stress.value}}/{{system.other.stress.max}}{{else}}{{system.stress.value}}/{{system.stress.max}}{{/if}}
+            </span>
+        </div>
+        {{/if}}
+    </div>
+    {{/if}}
+
+    {{!-- Inventory --}}
+    {{#if actor.items.size}}
+    <div class="mosh-section-header">{{localize "MOSH.Embeds.Inventory"}}</div>
+    <ul class="mosh-item-list">
+        {{#each actor.items as |item|}}
+        {{#if (or (eq item.type "weapon") (eq item.type "armor") (eq item.type "item"))}}
+        <li class="mosh-item-entry">
+            <span class="mosh-item-name">{{item.name}}</span>
+
+            {{#if (eq item.type "weapon")}}
+            <span class="mosh-item-damage">{{item.system.damage}}</span>
+            {{/if}}
+
+            {{#if (eq item.type "armor")}}
+            <span class="mosh-item-damage">AP:{{item.system.armorPoints}}</span>
+            {{/if}}
+        </li>
+        {{/if}}
+        {{/each}}
+    </ul>
+    {{/if}}
+
+    {{!-- Credits --}}
+    {{#if system.credits.value}}
+    <div class="mosh-credits-badge">
+        {{system.credits.value}} {{localize "MOSH.Credits"}}
+    </div>
+    {{/if}}
+    {{/if}}
+
+    {{!-- Biography/Description --}}
+    {{#if config.showBio}}
+    {{#if (or enrichedDescription enrichedBiography)}}
+    <div class="mosh-embed-body">
+        {{#if enrichedDescription}}
+        <div class="mosh-embed-desc">{{{enrichedDescription}}}</div>
+        {{/if}}
+        {{#if enrichedBiography}}
+        {{{enrichedBiography}}}
+        {{/if}}
+    </div>
+    {{/if}}
+    {{/if}}
+
+    {{#if config.compact}}
+    <div class="mosh-embed-toggle mosh-bio-toggle" role="button" tabindex="0">
+        {{localize "MOSH.Embeds.ReadMore"}}
+    </div>
+    {{/if}}
+</section>

@@ -1,0 +1,154 @@
+{{!-- MOSH Block Formatter Dialog Template --}}
+<form class="mosh-formatter-form">
+    {{!-- Tab Navigation --}}
+    <nav class="tabs" data-group="primary">
+        <a class="item" data-tab="blocks">
+            <i class="fas fa-cube"></i>
+            {{i18n.blocksTab}}
+        </a>
+        <a class="item" data-tab="figure">
+            <i class="fas fa-image"></i>
+            {{i18n.figureTab}}
+        </a>
+    </nav>
+
+    <div class="tab-content">
+        {{!-- ==================== --}}
+        {{!-- BLOCKS TAB           --}}
+        {{!-- ==================== --}}
+        <div class="tab" data-tab="blocks" data-group="primary">
+            
+            {{!-- Selected Text Info --}}
+            <div class="selection-info {{#if hasSelection}}has-selection{{else}}no-selection{{/if}}">
+                {{#if hasSelection}}
+                <i class="fas fa-check-circle"></i>
+                <span>{{i18n.selectedText}}: "{{truncatedText}}"</span>
+                {{else}}
+                <i class="fas fa-info-circle"></i>
+                <span>{{i18n.noSelection}}</span>
+                {{/if}}
+            </div>
+            
+            {{!-- Block Type Grid --}}
+            <div class="block-grid">
+                {{#each blocks}}
+                <button type="button" class="block-btn {{#if selected}}selected{{/if}}" data-action="selectBlock" data-type="{{type}}" title="{{hint}}">
+                    <i class="{{icon}}"></i>
+                    <span>{{label}}</span>
+                </button>
+                {{/each}}
+            </div>
+            
+            {{!-- Modifier Section (for handout) --}}
+            <div class="modifier-section" style="display:none;">
+                <label>{{i18n.modifier}}:</label>
+                <select class="modifier-select">
+                    <option value="">{{i18n.modifierNone}}</option>
+                    <option value="torn">{{i18n.modifierTorn}}</option>
+                    <option value="classified">{{i18n.modifierClassified}}</option>
+                </select>
+            </div>
+            
+            {{!-- Block Title --}}
+            <div class="title-section">
+                <label>{{i18n.blockTitle}}:</label>
+                <input type="text" class="block-title-input" placeholder="{{i18n.titlePlaceholder}}">
+            </div>
+            
+            {{!-- Preview Section --}}
+            <div class="preview-section">
+                <label><i class="fas fa-eye"></i> {{i18n.preview}}:</label>
+                <div class="block-preview-content">
+                    <p class="preview-placeholder">{{i18n.hint}}</p>
+                </div>
+            </div>
+            
+            {{!-- Insert Button --}}
+            <div class="action-section">
+                <button type="button" class="insert-block-btn" data-action="insertBlock">
+                    <i class="fas fa-plus-circle"></i>
+                    {{i18n.insert}}
+                </button>
+            </div>
+        </div>
+
+        {{!-- ==================== --}}
+        {{!-- FIGURE TAB           --}}
+        {{!-- ==================== --}}
+        <div class="tab" data-tab="figure" data-group="primary">
+            
+            {{!-- Image Preview --}}
+            <div class="figure-preview">
+                <img src="" alt="Preview" class="figure-preview-img" style="display:none;">
+                <div class="figure-preview-placeholder">
+                    <i class="fas fa-image"></i>
+                    <span>{{i18n.figureNoImage}}</span>
+                    <small>Click to browse</small>
+                </div>
+            </div>
+            
+            {{!-- Browse Controls --}}
+            <div class="figure-path-group">
+                <input type="text" class="figure-image-path" placeholder="{{i18n.figureBrowse}}" readonly>
+                <button type="button" class="figure-browse-btn" data-action="browseImage" title="{{i18n.figureBrowse}}">
+                    <i class="fas fa-folder-open"></i>
+                </button>
+            </div>
+            
+            {{!-- Figure Options --}}
+            <div class="figure-options">
+                <div class="figure-option-row">
+                    <div class="figure-option-group">
+                        <label>{{i18n.figurePosition}}:</label>
+                        <select class="figure-position">
+                            {{#each figureOptions.positions}}
+                            <option value="{{value}}">{{label}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    
+                    <div class="figure-option-group">
+                        <label>{{i18n.figureSize}}:</label>
+                        <select class="figure-size">
+                            {{#each figureOptions.sizes}}
+                            <option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="figure-option-row">
+                    <div class="figure-option-group">
+                        <label>{{i18n.figureStyle}}:</label>
+                        <select class="figure-style">
+                            {{#each figureOptions.styles}}
+                            <option value="{{value}}">{{label}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    
+                    <div class="figure-option-group">
+                        <label>{{i18n.figureCaption}}:</label>
+                        <input type="text" class="figure-caption" placeholder="{{i18n.figureCaptionPlaceholder}}">
+                    </div>
+                </div>
+            </div>
+            
+            {{!-- Figure Result Preview --}}
+            <div class="preview-section">
+                <label><i class="fas fa-eye"></i> {{i18n.preview}}:</label>
+                <div class="figure-result-preview">
+                    <p class="preview-placeholder">{{i18n.figureNoImage}}</p>
+                </div>
+            </div>
+            
+            {{!-- Insert Button --}}
+            <div class="action-section">
+                <button type="button" class="insert-figure-btn" data-action="insertFigure">
+                    <i class="fas fa-plus-circle"></i>
+                    {{i18n.insert}}
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

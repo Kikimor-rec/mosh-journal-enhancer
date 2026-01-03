@@ -1,0 +1,32 @@
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Foundry specific
+foundry.js
+foundry-data/
+
+# Module development
+node_modules/
+.git/
+dist/
+
+# Temporary files
+temp/
+*.log
+*.tmp
+*.bak
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build artifacts
+release/
+*.zip
+
+# Screenshots placeholder directory (add actual screenshots before release)
+docs/screenshots/*.png

@@ -1,0 +1,131 @@
+<section class="mosh-embed-card mosh-embed-item">
+    <header class="mosh-item-header">
+        <img src="{{item.img}}" class="mosh-item-img open-sheet" title="{{localize 'MOSH.Embeds.OpenSheet'}}" alt="{{item.name}}" />
+        <div class="mosh-item-title">
+            {{{enrichedLink}}}
+        </div>
+        {{#if system.cost}}
+        <div class="mosh-item-cost">{{system.cost}}{{localize "MOSH.Credits"}}</div>
+        {{/if}}
+    </header>
+
+    <div class="mosh-item-body">
+
+        {{!-- ======================== --}}
+        {{!-- WEAPON STATS             --}}
+        {{!-- ======================== --}}
+        {{#if (eq item.type "weapon")}}
+        <div class="mosh-stat-grid item-stats">
+            <div class="mosh-stat-cell">
+                <span class="label">{{localize "MOSH.Dmg"}}</span>
+                <span class="value">{{system.damage}}</span>
+            </div>
+
+            {{#if system.ranges.value}}
+            <div class="mosh-stat-cell">
+                <span class="label">{{localize "MOSH.Range"}}</span>
+                <span class="value">{{system.ranges.value}}</span>
+            </div>
+            {{/if}}
+
+            {{#if system.shots}}
+            <div class="mosh-stat-cell">
+                <span class="label">{{localize "MOSH.Shots"}}</span>
+                <span class="value">{{system.shots}}</span>
+            </div>
+            {{/if}}
+
+            {{#if system.critDmg}}
+            <div class="mosh-stat-cell">
+                <span class="label">{{localize "MOSH.Crit"}}</span>
+                <span class="value">{{system.critDmg}}</span>
+            </div>
+            {{/if}}
+
+            {{#if system.special}}
+            <div class="mosh-stat-cell">
+                <span class="label">{{localize "MOSH.Special"}}</span>
+                <span class="value">{{system.special}}</span>
+            </div>
+            {{/if}}
+        </div>
+        {{/if}}
+
+        {{!-- ======================== --}}
+        {{!-- ARMOR STATS              --}}
+        {{!-- ======================== --}}
+        {{#if (eq item.type "armor")}}
+        <div class="mosh-stat-grid item-stats">
+            <div class="mosh-stat-cell">
+                <span class="label">AP</span>
+                <span class="value">{{system.armorPoints}}</span>
+            </div>
+            {{#if system.damageReduction}}
+            <div class="mosh-stat-cell">
+                <span class="label">DR</span>
+                <span class="value">{{system.damageReduction}}</span>
+            </div>
+            {{/if}}
+            {{#if (gt system.oxygenMax 0)}}
+            <div class="mosh-stat-cell">
+                <span class="label">O2</span>
+                <span class="value">{{system.oxygenMax}}</span>
+            </div>
+            {{/if}}
+            {{#if system.speed}}
+            <div class="mosh-stat-cell">
+                <span class="label">{{localize "MOSH.Speed"}}</span>
+                <span class="value">{{system.speed}}</span>
+            </div>
+            {{/if}}
+        </div>
+        {{/if}}
+
+        {{!-- ======================== --}}
+        {{!-- SKILL STATS              --}}
+        {{!-- ======================== --}}
+        {{#if (eq item.type "skill")}}
+        <div class="mosh-stat-grid item-stats">
+            <div class="mosh-stat-cell">
+                <span class="label">{{localize "MOSH.Rank"}}</span>
+                <span class="value">{{system.rank}} (+{{system.bonus}}%)</span>
+            </div>
+        </div>
+        {{/if}}
+
+        {{!-- ======================== --}}
+        {{!-- SHIP MODULE (Upgrade)    --}}
+        {{!-- ======================== --}}
+        {{#if (eq item.type "module")}}
+        <div class="mosh-stat-grid item-stats">
+            <div class="mosh-stat-cell">
+                <span class="label">{{localize "MOSH.Feature"}}</span>
+                <span class="value">{{system.feature}}</span>
+            </div>
+        </div>
+        {{/if}}
+
+        {{!-- ======================== --}}
+        {{!-- GENERAL ITEM             --}}
+        {{!-- ======================== --}}
+        {{#if (eq item.type "item")}}
+        {{#if (gt system.quantity 1)}}
+        <div class="mosh-stat-grid item-stats">
+            <div class="mosh-stat-cell">
+                <span class="label">{{localize "MOSH.Qty"}}</span>
+                <span class="value">{{system.quantity}}</span>
+            </div>
+        </div>
+        {{/if}}
+        {{/if}}
+
+        {{!-- ======================== --}}
+        {{!-- DESCRIPTION              --}}
+        {{!-- ======================== --}}
+        {{#if enrichedDescription}}
+        <div class="mosh-item-description">
+            {{{enrichedDescription}}}
+        </div>
+        {{/if}}
+    </div>
+</section>

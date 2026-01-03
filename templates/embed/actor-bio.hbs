@@ -1,0 +1,157 @@
+<section class="mosh-embed-card mosh-embed-bio {{#if config.compact}}compact{{/if}}">
+    <header class="mosh-embed-header">
+        <img src="{{actor.img}}" class="mosh-embed-img open-sheet" title="{{localize 'MOSH.Embeds.OpenSheet'}}" alt="{{actor.name}}" />
+        <div class="mosh-embed-title">
+            {{{enrichedLink}}}
+        </div>
+        {{#if system.class.value}}
+        <div class="mosh-class-badge">{{system.class.value}}</div>
+        {{/if}}
+    </header>
+
+    {{!-- Rank/Level Info --}}
+    {{#if (or system.rank.value system.attributes.level.value system.credits.value)}}
+    <div class="mosh-bio-info">
+        {{#if system.rank.value}}<span>{{system.rank.value}}</span>{{/if}}
+        {{#if system.attributes.level.value}}<span>Lv.{{system.attributes.level.value}}</span>{{/if}}
+        {{#if system.credits.value}}<span class="mosh-credits-inline">{{system.credits.value}} {{localize "MOSH.Credits"}}</span>{{/if}}
+    </div>
+    {{/if}}
+
+    {{#if isCharacter}}
+    {{!-- ======================== --}}
+    {{!-- VITALS STRIP             --}}
+    {{!-- ======================== --}}
+    <div class="mosh-stat-grid bio-stats">
+        {{!-- Health --}}
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Health"}}</span>
+            <span class="value rect">{{#if system.health.value}}{{system.health.value}}{{else}}0{{/if}}/{{#if system.health.max}}{{system.health.max}}{{else}}0{{/if}}</span>
+        </div>
+        
+        {{!-- Stress (system.other.stress in MOSH or system.stress fallback) --}}
+        {{#if (or system.other.stress system.stress)}}
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Stress"}}</span>
+            <span class="value rect">
+                {{#if system.other.stress}}{{system.other.stress.value}}/{{system.other.stress.max}}{{else}}{{#if system.stress.value}}{{system.stress.value}}/{{system.stress.max}}{{else}}0{{/if}}{{/if}}
+            </span>
+        </div>
+        {{/if}}
+        
+        {{!-- Wounds --}}
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Wounds"}}</span>
+            <span class="value rect">{{#if system.wounds.value}}{{system.wounds.value}}/{{system.wounds.max}}{{else}}{{#if system.hits.value}}{{system.hits.value}}/{{system.hits.max}}{{else}}0{{/if}}{{/if}}</span>
+        </div>
+        
+        {{!-- Armor --}}
+        {{#if (or system.armor.points system.stats.armor.value)}}
+        <div class="mosh-stat-cell">
+            <span class="label">{{localize "MOSH.Armor"}}</span>
+            <span class="value rect">
+                {{#if system.armor.points}}{{system.armor.points}}{{else}}{{system.stats.armor.value}}{{/if}}
+            </span>
+        </div>
+        {{/if}}
+    </div>
+
+    {{!-- ======================== --}}
+    {{!-- STATS                    --}}
+    {{!-- ======================== --}}
+    {{#if (or system.stats.strength system.stats.speed)}}
+    <div class="mosh-bio-list-header">{{localize "MOSH.Embeds.Stats"}}</div>
+    <div class="mosh-stat-grid bio-stats">
+        <div class="mosh-stat-cell">
+            <span class="label">STR</span>
+            <span class="value">{{system.stats.strength.value}}</span>
+        </div>
+        <div class="mosh-stat-cell">
+            <span class="label">SPD</span>
+            <span class="value">{{system.stats.speed.value}}</span>
+        </div>
+        <div class="mosh-stat-cell">
+            <span class="label">INT</span>
+            <span class="value">{{system.stats.intellect.value}}</span>
+        </div>
+        <div class="mosh-stat-cell">
+            <span class="label">CMB</span>
+            <span class="value">{{system.stats.combat.value}}</span>
+        </div>
+    </div>
+
+    {{!-- SAVES --}}
+    <div class="mosh-bio-list-header">{{localize "MOSH.Embeds.Saves"}}</div>
+    <div class="mosh-stat-grid bio-stats">
+        <div class="mosh-stat-cell">
+            <span class="label">SAN</span>
+            <span class="value">{{system.stats.sanity.value}}</span>
+        </div>
+        <div class="mosh-stat-cell">
+            <span class="label">FEAR</span>
+            <span class="value">{{system.stats.fear.value}}</span>
+        </div>
+        <div class="mosh-stat-cell">
+            <span class="label">BODY</span>
+            <span class="value">{{system.stats.body.value}}</span>
+        </div>
+        <div class="mosh-stat-cell">
+            <span class="label">ARM</span>
+            <span class="value">{{system.stats.armor.value}}</span>
+        </div>
+    </div>
+    {{/if}}
+
+    {{!-- ======================== --}}
+    {{!-- SKILLS & LOADOUT         --}}
+    {{!-- ======================== --}}
+    <div class="mosh-bio-lists">
+        {{!-- Skills --}}
+        <div class="mosh-bio-list-header">{{localize "MOSH.Embeds.Skills"}}</div>
+        <div class="mosh-tags-list">
+            {{#each items as |item|}}
+            {{#if (eq item.type "skill")}}
+            <div class="mosh-tag skill">
+                <span class="tag-name">{{item.name}}</span>
+                {{#if item.system.rank}}
+                <span class="tag-rank">(+{{item.system.rank}})</span>
+                {{/if}}
+            </div>
+            {{/if}}
+            {{/each}}
+        </div>
+
+        {{!-- Loadout --}}
+        <div class="mosh-bio-list-header">{{localize "MOSH.Embeds.Loadout"}}</div>
+        <div class="mosh-tags-list">
+            {{#each items as |item|}}
+            {{#if (or (eq item.type "weapon") (eq item.type "armor") (eq item.type "item"))}}
+            <div class="mosh-tag gear clickable" data-action="roll" data-item-id="{{item.id}}" role="button" tabindex="0">
+                <span class="tag-name">{{item.name}}</span>
+                {{#if item.system.quantity}}
+                {{#if (gt item.system.quantity 1)}}
+                <span class="tag-qty">x{{item.system.quantity}}</span>
+                {{/if}}
+                {{/if}}
+            </div>
+            {{/if}}
+            {{/each}}
+        </div>
+    </div>
+    {{/if}}
+
+    {{!-- Biography --}}
+    {{#if config.showBio}}
+    {{#if enrichedBiography}}
+    <div class="mosh-embed-body mosh-bio-content {{#unless config.compact}}expanded{{/unless}}">
+        {{{enrichedBiography}}}
+    </div>
+    {{/if}}
+    {{/if}}
+
+    {{#if config.compact}}
+    <div class="mosh-embed-toggle mosh-bio-toggle" role="button" tabindex="0">
+        {{localize "MOSH.Embeds.ReadMore"}}
+    </div>
+    {{/if}}
+</section>

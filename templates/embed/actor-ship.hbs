@@ -1,0 +1,103 @@
+<section class="mosh-embed-card mosh-embed-ship">
+    <header class="mosh-embed-header">
+        <img src="{{actor.img}}" class="mosh-embed-img open-sheet" title="{{localize 'MOSH.Embeds.OpenSheet'}}" alt="{{actor.name}}" />
+        <div class="mosh-embed-title">
+            {{{enrichedLink}}}
+        </div>
+        <div class="mosh-class-badge">{{localize "MOSH.Ship"}}</div>
+    </header>
+
+    {{!-- Ship Make --}}
+    {{#if system.make}}
+    <div class="mosh-ship-make">{{system.make}}</div>
+    {{/if}}
+
+    {{!-- ======================== --}}
+    {{!-- VITALS: HULL/FUEL/ARMOR  --}}
+    {{!-- ======================== --}}
+    <div class="mosh-ship-vitals box-row">
+        <div class="vital-box">
+            <span class="label">{{localize "MOSH.Hull"}}</span>
+            <span class="value">{{system.supplies.hull.value}}/{{system.supplies.hull.max}}</span>
+        </div>
+        <div class="vital-box">
+            <span class="label">{{localize "MOSH.Fuel"}}</span>
+            <span class="value">{{system.supplies.fuel.value}}/{{system.supplies.fuel.max}}</span>
+        </div>
+        <div class="vital-box">
+            <span class="label">{{localize "MOSH.Armor"}}</span>
+            <span class="value">{{system.stats.armor.value}}</span>
+        </div>
+    </div>
+
+    {{!-- ======================== --}}
+    {{!-- SHIP SAVES               --}}
+    {{!-- ======================== --}}
+    <div class="mosh-section-header">{{localize "MOSH.Embeds.Saves"}}</div>
+    <div class="mosh-stat-grid bio-stats">
+        <div class="mosh-stat-cell clickable" data-action="roll" data-roll-key="thrusters" role="button" tabindex="0">
+            <span class="label">{{localize "MOSH.Thrusters"}}</span>
+            <span class="value">{{system.stats.thrusters.value}}</span>
+        </div>
+        <div class="mosh-stat-cell clickable" data-action="roll" data-roll-key="battle" role="button" tabindex="0">
+            <span class="label">{{localize "MOSH.Battle"}}</span>
+            <span class="value">{{system.stats.battle.value}}</span>
+        </div>
+        <div class="mosh-stat-cell clickable" data-action="roll" data-roll-key="systems" role="button" tabindex="0">
+            <span class="label">{{localize "MOSH.Systems"}}</span>
+            <span class="value">{{system.stats.systems.value}}</span>
+        </div>
+    </div>
+
+    {{!-- ======================== --}}
+    {{!-- SHIP INVENTORY           --}}
+    {{!-- ======================== --}}
+    <div class="mosh-ship-content">
+        
+        {{!-- Weapons --}}
+        <div class="mosh-section-header">{{localize "MOSH.Weapons"}}</div>
+        <div class="mosh-inventory">
+            {{#each items as |item|}}
+            {{#if (eq item.type "weapon")}}
+            <div class="mosh-item-row clickable" data-action="roll" data-item-id="{{item.id}}" role="button" tabindex="0">
+                <span class="item-name">{{item.name}}</span>
+                <span class="item-stats">
+                    {{#if item.system.damage}}{{item.system.damage}}{{/if}}
+                    {{#if (eq item.system.damage 0)}}Special{{/if}}
+                    {{#if item.system.bonus}}(+{{item.system.bonus}}){{/if}}
+                </span>
+            </div>
+            {{/if}}
+            {{/each}}
+        </div>
+
+        {{!-- Upgrades/Modules --}}
+        <div class="mosh-section-header">{{localize "MOSH.Upgrades"}}</div>
+        <div class="mosh-inventory">
+            {{#each items as |item|}}
+            {{#if (eq item.type "module")}}
+            <div class="mosh-item-row clickable" data-action="roll" data-item-id="{{item.id}}" role="button" tabindex="0">
+                <span class="item-name">{{item.name}}</span>
+                {{#if item.system.feature}}
+                <span class="item-stats">{{item.system.feature}}</span>
+                {{/if}}
+            </div>
+            {{/if}}
+            {{/each}}
+        </div>
+
+        {{!-- Cargo --}}
+        <div class="mosh-section-header">{{localize "MOSH.Cargo"}}</div>
+        <div class="mosh-inventory">
+            {{#each items as |item|}}
+            {{#if (eq item.type "item")}}
+            <div class="mosh-item-row clickable" data-action="roll" data-item-id="{{item.id}}" role="button" tabindex="0">
+                <span class="item-name">{{item.name}}</span>
+                <span class="item-stats">x{{item.system.quantity}}</span>
+            </div>
+            {{/if}}
+            {{/each}}
+        </div>
+
+    </div>
+</section>

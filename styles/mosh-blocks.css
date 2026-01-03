@@ -1,0 +1,667 @@
+/* ============================================= */
+/* MOSH JOURNAL BLOCKS v2.2                     */
+/* Mothership RPG - Sci-Fi Horror Aesthetic     */
+/* ============================================= */
+
+/* ============================================= */
+/* 0. CUSTOM PROPERTIES                         */
+/* ============================================= */
+
+:root {
+    /* Core palette - dark */
+    --mosh-void: #000000;
+    --mosh-hull: #0a0a0a;
+    --mosh-panel: #111111;
+    --mosh-grate: #1a1a1a;
+    --mosh-metal: #2a2a2a;
+    --mosh-steel: #444444;
+    --mosh-wire: #666666;
+    
+    /* Text */
+    --mosh-text: #d0d0d0;
+    --mosh-text-dim: #888888;
+    --mosh-text-bright: #ffffff;
+    
+    /* Accent colors */
+    --mosh-hazard: #ffcc00;
+    --mosh-danger: #cc0000;
+    --mosh-bio: #00cc66;
+    --mosh-tech: #00aaff;
+    --mosh-psi: #9966ff;
+    
+    /* Terminal */
+    --mosh-terminal-green: #00ff41;
+    --mosh-terminal-amber: #ffb000;
+    --mosh-terminal-glow: 0 0 8px currentColor;
+}
+
+/* Light theme overrides */
+.theme-light {
+    --mosh-void: #ffffff;
+    --mosh-hull: #f8f8f8;
+    --mosh-panel: #f0f0f0;
+    --mosh-grate: #e8e8e8;
+    --mosh-metal: #d0d0d0;
+    --mosh-steel: #aaaaaa;
+    --mosh-wire: #888888;
+    --mosh-text: #1a1a1a;
+    --mosh-text-dim: #555555;
+    --mosh-text-bright: #000000;
+}
+
+/* ============================================= */
+/* 1. BLOCK BASE STYLES                         */
+/* ============================================= */
+
+.mosh-block {
+    position: relative;
+    margin: 1.5em 0;
+    padding: 1em 1.25em;
+    font-family: 'IBM Plex Sans', 'Roboto', -apple-system, sans-serif;
+    border-radius: 0;
+    box-sizing: border-box;
+    background: var(--mosh-panel);
+    color: var(--mosh-text);
+}
+
+.mosh-block > *:first-child { margin-top: 0; }
+.mosh-block > *:last-child { margin-bottom: 0; }
+
+.mosh-block-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    font-family: 'Oswald', 'Bebas Neue', Impact, sans-serif;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75em;
+    font-size: 0.85em;
+}
+
+.mosh-block-header i {
+    font-size: 1em;
+    opacity: 0.8;
+}
+
+/* ============================================= */
+/* 2. NARRATIVE BLOCK                           */
+/* Read-aloud text for players                  */
+/* ============================================= */
+
+.mosh-block.narrative {
+    background: var(--mosh-hull);
+    border: none;
+    border-left: 3px solid var(--mosh-wire);
+    padding: 1.25em 1.5em 1.25em 1.75em;
+    font-size: 1.02em;
+    line-height: 1.7;
+    font-style: italic;
+    color: var(--mosh-text);
+}
+
+.mosh-block.narrative::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--mosh-wire) 0%, var(--mosh-steel) 50%, var(--mosh-wire) 100%);
+}
+
+.mosh-block.narrative p { margin: 0.5em 0; }
+
+/* ============================================= */
+/* 3. QUOTE BLOCK                               */
+/* NPC dialogue, radio transmissions            */
+/* ============================================= */
+
+.mosh-block.quote {
+    background: transparent;
+    border: none;
+    border-left: 3px solid var(--mosh-steel);
+    padding: 0.75em 1em 0.75em 1.5em;
+    margin-left: 0.5em;
+    font-style: italic;
+    color: var(--mosh-text);
+}
+
+.mosh-block.quote p {
+    font-size: 1.02em;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.mosh-block.quote cite {
+    display: block;
+    margin-top: 0.75em;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 0.8em;
+    color: var(--mosh-text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.mosh-block.quote cite::before { content: '— '; }
+
+/* Radio transmission variant */
+.mosh-block.quote.radio {
+    border-left-color: var(--mosh-tech);
+}
+
+.mosh-block.quote.radio::before {
+    content: '◉ REC';
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    font-size: 0.65em;
+    color: var(--mosh-danger);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    animation: rec-blink 2s infinite;
+}
+
+@keyframes rec-blink {
+    0%, 70% { opacity: 1; }
+    71%, 100% { opacity: 0.3; }
+}
+
+/* ============================================= */
+/* 4. TERMINAL BLOCK                            */
+/* Ship computer, AI, system output             */
+/* ============================================= */
+
+.mosh-block.terminal {
+    background: #000000;
+    color: var(--mosh-terminal-green);
+    border: 1px solid #003300;
+    font-family: 'IBM Plex Mono', 'Roboto Mono', 'Courier New', monospace;
+    font-size: 0.88em;
+    line-height: 1.6;
+    padding: 1.25em 1.5em;
+    text-shadow: var(--mosh-terminal-glow);
+    overflow: hidden;
+}
+
+.mosh-block.terminal .mosh-block-header {
+    color: var(--mosh-terminal-green);
+    font-family: inherit;
+    letter-spacing: 0.15em;
+    border-bottom: 1px solid #003300;
+    padding-bottom: 0.75em;
+    margin-bottom: 1em;
+    text-shadow: var(--mosh-terminal-glow);
+}
+
+/* Cursor blink */
+.mosh-block.terminal p:last-of-type::after {
+    content: '█';
+    animation: cursor-blink 1s step-end infinite;
+    margin-left: 2px;
+}
+
+@keyframes cursor-blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* CRT scanlines */
+.mosh-block.terminal::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent 0px, transparent 1px, rgba(0,0,0,0.12) 1px, rgba(0,0,0,0.12) 2px);
+    pointer-events: none;
+}
+
+/* Vignette */
+.mosh-block.terminal::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.25) 100%);
+    pointer-events: none;
+}
+
+/* Keep terminal dark in light theme */
+.theme-light .mosh-block.terminal {
+    background: #000000;
+    color: var(--mosh-terminal-green);
+}
+
+/* Amber variant */
+.mosh-block.terminal.amber {
+    color: var(--mosh-terminal-amber);
+    border-color: #332200;
+}
+
+/* Error variant */
+.mosh-block.terminal.error {
+    color: #ff4444;
+    border-color: #330000;
+}
+
+/* ============================================= */
+/* 5. HANDOUT BLOCK                             */
+/* Notes, documents, letters, data logs         */
+/* ============================================= */
+
+.mosh-block.handout {
+    background: var(--mosh-grate);
+    border: 1px solid var(--mosh-steel);
+    padding: 1.25em;
+    font-family: 'Courier New', monospace;
+    font-size: 0.92em;
+    line-height: 1.6;
+}
+
+.mosh-block.handout .mosh-block-header {
+    font-family: 'Oswald', sans-serif;
+    color: var(--mosh-text-dim);
+    border-bottom: 1px dashed var(--mosh-steel);
+    padding-bottom: 0.5em;
+    margin-bottom: 1em;
+}
+
+/* Paper texture effect */
+.mosh-block.handout::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+}
+
+/* Torn edge effect */
+.mosh-block.handout.torn {
+    clip-path: polygon(
+        0% 2%, 3% 0%, 7% 1%, 12% 0%, 18% 2%, 23% 0%, 28% 1%, 
+        35% 0%, 42% 2%, 48% 0%, 55% 1%, 62% 0%, 68% 2%, 75% 0%, 
+        82% 1%, 88% 0%, 95% 2%, 100% 0%, 100% 98%, 97% 100%, 
+        92% 99%, 87% 100%, 80% 98%, 73% 100%, 67% 99%, 60% 100%, 
+        52% 98%, 45% 100%, 38% 99%, 30% 100%, 22% 98%, 15% 100%, 
+        8% 99%, 2% 100%, 0% 98%
+    );
+}
+
+/* Classified stamp */
+.mosh-block.handout.classified::after {
+    content: 'CLASSIFIED';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    font-family: 'Oswald', Impact, sans-serif;
+    font-size: 2.5em;
+    font-weight: 700;
+    color: rgba(200, 0, 0, 0.15);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+/* ============================================= */
+/* 6. NAVIGATION BLOCK                          */
+/* Links to connected locations/rooms           */
+/* ============================================= */
+
+.mosh-block.navigation {
+    background: var(--mosh-hull);
+    border: 2px solid var(--mosh-steel);
+    padding: 0;
+    overflow: hidden;
+}
+
+.mosh-block.navigation .mosh-block-header {
+    background: var(--mosh-metal);
+    color: var(--mosh-text-bright);
+    margin: 0;
+    padding: 0.6em 1em;
+    border-bottom: 2px solid var(--mosh-steel);
+    font-size: 0.8em;
+}
+
+.mosh-block.navigation .mosh-block-header i {
+    color: var(--mosh-tech);
+}
+
+.mosh-block.navigation ul,
+.mosh-block.navigation .nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mosh-block.navigation li,
+.mosh-block.navigation .nav-item {
+    padding: 0.6em 1em;
+    border-bottom: 1px solid var(--mosh-metal);
+    display: flex;
+    align-items: center;
+    gap: 0.75em;
+    transition: background 0.15s ease;
+}
+
+.mosh-block.navigation li:last-child,
+.mosh-block.navigation .nav-item:last-child {
+    border-bottom: none;
+}
+
+.mosh-block.navigation li:hover,
+.mosh-block.navigation .nav-item:hover {
+    background: var(--mosh-grate);
+}
+
+.mosh-block.navigation li::before {
+    content: '▸';
+    color: var(--mosh-tech);
+    font-size: 0.8em;
+}
+
+.mosh-block.navigation a {
+    color: var(--mosh-tech);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--mosh-tech);
+}
+
+.mosh-block.navigation a:hover {
+    color: var(--mosh-text-bright);
+    border-bottom-style: solid;
+}
+
+/* Direction indicators */
+.mosh-block.navigation .direction {
+    font-size: 0.75em;
+    color: var(--mosh-text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-left: auto;
+}
+
+/* ============================================= */
+/* 7. WARDEN BLOCK                              */
+/* GM tips, advice, hidden information          */
+/* ============================================= */
+
+.mosh-block.warden {
+    background: linear-gradient(135deg, var(--mosh-grate) 0%, var(--mosh-panel) 100%);
+    border: 1px solid var(--mosh-steel);
+    border-left: 4px solid var(--mosh-bio);
+}
+
+.mosh-block.warden .mosh-block-header {
+    color: var(--mosh-bio);
+    font-size: 0.8em;
+}
+
+.mosh-block.warden .mosh-block-header i {
+    color: var(--mosh-bio);
+}
+
+/* Dot grid pattern */
+.mosh-block.warden::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    background-image: radial-gradient(var(--mosh-bio) 1px, transparent 1px);
+    background-size: 5px 5px;
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+/* ============================================= */
+/* 8. INFO BLOCK                                */
+/* Rules, mechanics, important information      */
+/* ============================================= */
+
+.mosh-block.info {
+    background: var(--mosh-panel);
+    border: 1px solid var(--mosh-steel);
+    border-top: 3px solid var(--mosh-hazard);
+}
+
+.mosh-block.info .mosh-block-header {
+    color: var(--mosh-hazard);
+    border-bottom: 1px solid var(--mosh-metal);
+    padding-bottom: 0.6em;
+    margin-bottom: 1em;
+}
+
+.mosh-block.info .mosh-block-header i {
+    color: var(--mosh-hazard);
+}
+
+/* Hazard stripes corner */
+.mosh-block.info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 32px;
+    height: 32px;
+    background: repeating-linear-gradient(-45deg, var(--mosh-hazard) 0px, var(--mosh-hazard) 3px, var(--mosh-void) 3px, var(--mosh-void) 6px);
+    clip-path: polygon(100% 0, 0 0, 100% 100%);
+    opacity: 0.5;
+}
+
+/* ============================================= */
+/* 9. FIGURE BLOCK                              */
+/* Images with captions, floatable              */
+/* ============================================= */
+
+.mosh-figure {
+    margin: 1em 0;
+    padding: 0;
+    display: inline-block;
+    max-width: 100%;
+}
+
+.mosh-figure img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--mosh-steel);
+}
+
+.mosh-figure figcaption {
+    background: var(--mosh-metal);
+    color: var(--mosh-text-dim);
+    padding: 0.4em 0.75em;
+    font-size: 0.8em;
+    text-align: center;
+    border: 1px solid var(--mosh-steel);
+    border-top: none;
+}
+
+/* Float variants */
+.mosh-figure.left {
+    float: left;
+    margin: 0 1.25em 0.75em 0;
+    max-width: 45%;
+}
+
+.mosh-figure.right {
+    float: right;
+    margin: 0 0 0.75em 1.25em;
+    max-width: 45%;
+}
+
+/* Size variants */
+.mosh-figure.small { max-width: 150px; }
+.mosh-figure.medium { max-width: 250px; }
+.mosh-figure.large { max-width: 400px; }
+
+.mosh-figure.left.small,
+.mosh-figure.right.small { max-width: 150px; }
+
+.mosh-figure.left.medium,
+.mosh-figure.right.medium { max-width: 250px; }
+
+/* Polaroid style */
+.mosh-figure.polaroid {
+    background: #f5f5f0;
+    padding: 0.5em 0.5em 2em 0.5em;
+    border: none;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+}
+
+.mosh-figure.polaroid img {
+    border: none;
+}
+
+.mosh-figure.polaroid figcaption {
+    background: transparent;
+    color: #333;
+    border: none;
+    font-family: 'Courier New', monospace;
+    padding-top: 0.75em;
+}
+
+/* Monitor/screen style */
+.mosh-figure.screen {
+    background: #111;
+    padding: 0.75em;
+    border: 3px solid #333;
+}
+
+.mosh-figure.screen img {
+    border: none;
+}
+
+.mosh-figure.screen figcaption {
+    background: transparent;
+    color: var(--mosh-terminal-green);
+    font-family: monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* ============================================= */
+/* 10. UTILITY CLASSES                          */
+/* Float, alignment, clear                      */
+/* ============================================= */
+
+/* Float utilities */
+.mosh-left {
+    float: left;
+    margin-right: 1em;
+    margin-bottom: 0.5em;
+}
+
+.mosh-right {
+    float: right;
+    margin-left: 1em;
+    margin-bottom: 0.5em;
+}
+
+.mosh-clear {
+    clear: both;
+}
+
+/* Flex layouts */
+.mosh-flex {
+    display: flex;
+    gap: 1em;
+}
+
+.mosh-flex.between {
+    justify-content: space-between;
+}
+
+.mosh-flex.around {
+    justify-content: space-around;
+}
+
+.mosh-flex.wrap {
+    flex-wrap: wrap;
+}
+
+/* ============================================= */
+/* 11. EDITOR DISPLAY STYLES                    */
+/* ============================================= */
+
+.editor .mosh-block,
+.ProseMirror .mosh-block {
+    cursor: text;
+}
+
+/* Block type label in edit mode */
+.editor .mosh-block[data-block-type]::after,
+.ProseMirror .mosh-block[data-block-type]::after {
+    content: attr(data-block-type);
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 500;
+    padding: 2px 6px;
+    background: var(--mosh-void);
+    color: var(--mosh-text-dim);
+    border: 1px solid var(--mosh-steel);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Terminal exception */
+.editor .mosh-block.terminal[data-block-type]::after,
+.ProseMirror .mosh-block.terminal[data-block-type]::after {
+    background: #000;
+    border-color: #003300;
+    color: var(--mosh-terminal-green);
+}
+
+/* Figure label */
+.editor .mosh-figure::after,
+.ProseMirror .mosh-figure::after {
+    content: 'figure';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-family: monospace;
+    font-size: 9px;
+    padding: 2px 6px;
+    background: var(--mosh-void);
+    color: var(--mosh-text-dim);
+    border: 1px solid var(--mosh-steel);
+    text-transform: uppercase;
+    z-index: 10;
+}
+
+/* ============================================= */
+/* 12. PRINT STYLES                             */
+/* ============================================= */
+
+@media print {
+    .mosh-block {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    
+    .mosh-block.terminal {
+        background: #f0f0f0 !important;
+        color: #000 !important;
+        text-shadow: none !important;
+    }
+    
+    .mosh-block::before,
+    .mosh-block::after {
+        display: none !important;
+    }
+    
+    .mosh-figure.left,
+    .mosh-figure.right {
+        float: none;
+        margin: 1em auto;
+    }
+}
