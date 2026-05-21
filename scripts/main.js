@@ -3,17 +3,17 @@
  * A Foundry VTT module for enhancing journal entries with custom blocks
  * 
  * @module mosh-journal-enhancer
- * @version 1.0.0
+ * @version 1.0.1
  * @author Kikimor
  * @license MIT
  */
 
-import { MODULE_ID, TEMPLATES } from "./config.js";
+import { MODULE_ID, MODULE_VERSION, TEMPLATES } from "./config.js";
 import { registerEmbedOverrides } from "./embeds.js";
-import { registerToolbarHook, addToolbarStyles, openBlockPanel } from "./toolbar.js";
+import { registerToolbarHook, addToolbarStyles, openBlockPanel, insertBlock, insertFigure } from "./toolbar.js";
 import { registerBlockFormatterMacro, updateMacroIfNeeded } from "./macro.js";
 import { generateBlockHTML, generateFigureHTML } from "./blocks.js";
-import { log, logError } from "./utils.js";
+import { getSetting, isMonksEnhancedJournalActive, log, logError } from "./utils.js";
 
 /**
  * Module initialization
@@ -28,7 +28,11 @@ Hooks.once("init", async function() {
     await preloadTemplates();
     
     // Register embed overrides MUST be in init hook (before documents are loaded)
-    registerEmbedOverrides();
+    if (getSetting("enableEmbeds")) {
+        registerEmbedOverrides();
+    } else {
+        log("Embed overrides disabled by setting");
+    }
     
     log("Initialization complete");
 });
@@ -39,11 +43,12 @@ Hooks.once("init", async function() {
 Hooks.once("ready", async function() {
     log("Module ready");
     
-    // Add toolbar hook
-    registerToolbarHook();
-    
-    // Add toolbar styles
-    addToolbarStyles();
+    if (getSetting("enableToolbar")) {
+        registerToolbarHook();
+        addToolbarStyles();
+    } else {
+        log("Toolbar disabled by setting");
+    }
     
     // Add dialog styles
     addDialogStyles();
@@ -80,6 +85,15 @@ function registerSettings() {
         config: true,
         type: Boolean,
         default: true
+    });
+
+    game.settings.register(MODULE_ID, "debugLogging", {
+        name: "MOSH.Settings.DebugLogging",
+        hint: "MOSH.Settings.DebugLoggingHint",
+        scope: "client",
+        config: true,
+        type: Boolean,
+        default: false
     });
     
     log("Settings registered");
@@ -1174,13 +1188,16 @@ function exposeModuleAPI() {
     module.api = {
         // Panel function (used by macro and toolbar)
         openBlockPanel,
+        insertBlock,
+        insertFigure,
+        isMonksEnhancedJournalActive,
         
         // Block generation
         generateBlockHTML,
         generateFigureHTML,
         
         // Version
-        version: "2.3.0"
+        version: MODULE_VERSION
     };
     
     // Also expose on globalThis for macro compatibility

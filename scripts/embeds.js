@@ -1,232 +1,299 @@
 /**
  * MOSH Journal Enhancer - Actor/Item Embeds
- * Override toEmbed methods for Mothership actors and items
- * Based on original mosh-statblock implementation
+ * Adds Mothership-specific @Embed rendering without permanently clobbering originals.
  */
 
 import { MODULE_ID, TEMPLATES } from "./config.js";
+import { log, logError } from "./utils.js";
+
+const PATCH_MARKER = Symbol.for(`${MODULE_ID}.embedOverridesRegistered`);
+const ORIGINALS = {
+    actorToEmbed: null,
+    actorOnEmbed: null,
+    itemToEmbed: null,
+    itemOnEmbed: null
+};
 
 /**
- * Register embed overrides for Mothership system
- * This should be called during init hook
+ * Register embed wrappers for the Mothership system.
  */
 export function registerEmbedOverrides() {
-    // Only apply to Mothership system
     if (game.system.id !== "mosh") {
-        console.log(`${MODULE_ID} | Not Mothership system, skipping embed overrides`);
+        log("Not Mothership system, skipping embed overrides");
         return;
     }
 
     const ActorClass = CONFIG.Actor.documentClass;
     const ItemClass = CONFIG.Item.documentClass;
+    if (!ActorClass?.prototype || !ItemClass?.prototype) return;
 
-    // --- Override Actor.toEmbed ---
-    ActorClass.prototype.toEmbed = async function (config, options = {}) {
-        const actor = this;
-        
-        // Helper to check for statblock flag
-        const checkObject = (obj) => {
-            if (!obj) return false;
-            if (obj.statblock) return true;
-            if ("statblock" in obj) return true;
-            for (const key of Object.keys(obj)) {
-                if (key.toLowerCase() === "statblock") return true;
-            }
-            return false;
+    if (ActorClass.prototype[PATCH_MARKER] && ItemClass.prototype[PATCH_MARKER]) {
+        log("Embed overrides already registered");
+        return;
+    }
+
+    ORIGINALS.actorToEmbed = ActorClass.prototype.toEmbed;
+    ORIGINALS.actorOnEmbed = ActorClass.prototype.onEmbed;
+    ORIGINALS.itemToEmbed = ItemClass.prototype.toEmbed;
+    ORIGINALS.itemOnEmbed = ItemClass.prototype.onEmbed;
+
+    if (game.modules.get("lib-wrapper")?.active && globalThis.libWrapper) {
+        libWrapper.register(MODULE_ID, "CONFIG.Actor.documentClass.prototype.toEmbed", actorToEmbedWrapper, "WRAPPER");
+        libWrapper.register(MODULE_ID, "CONFIG.Actor.documentClass.prototype.onEmbed", actorOnEmbedWrapper, "WRAPPER");
+        libWrapper.register(MODULE_ID, "CONFIG.Item.documentClass.prototype.toEmbed", itemToEmbedWrapper, "WRAPPER");
+        libWrapper.register(MODULE_ID, "CONFIG.Item.documentClass.prototype.onEmbed", itemOnEmbedWrapper, "WRAPPER");
+    } else {
+        ActorClass.prototype.toEmbed = function(config = {}, options = {}) {
+            return actorToEmbedWrapper.call(this, ORIGINALS.actorToEmbed?.bind(this), config, options);
         };
+        ActorClass.prototype.onEmbed = function(element, ...args) {
+            return actorOnEmbedWrapper.call(this, ORIGINALS.actorOnEmbed?.bind(this), element, ...args);
+        };
+        ItemClass.prototype.toEmbed = function(config = {}, options = {}) {
+            return itemToEmbedWrapper.call(this, ORIGINALS.itemToEmbed?.bind(this), config, options);
+        };
+        ItemClass.prototype.onEmbed = function(element, ...args) {
+            return itemOnEmbedWrapper.call(this, ORIGINALS.itemOnEmbed?.bind(this), element, ...args);
+        };
+    }
 
-        // Determine Smart Default based on Actor Type
-        const isCreature = actor.type === "creature";
-        const isShip = actor.type === "ship";
-        const isCharacter = actor.type === "character" || actor.type === "android";
+    ActorClass.prototype[PATCH_MARKER] = true;
+    ItemClass.prototype[PATCH_MARKER] = true;
+    log("Registered embed wrappers for Mothership");
+}
 
-        let viewMode = "bio";
-        if (isCreature) viewMode = "statblock";
-        if (isShip) viewMode = "ship";
+async function actorToEmbedWrapper(wrapped, config = {}, options = {}) {
+    config ||= {};
+    options ||= {};
 
-        // Check for overrides in config/options
-        if (checkObject(config) || checkObject(options)) {
-            viewMode = "statblock";
-        }
+    if (!shouldRenderMoshActorEmbed(this, config, options)) {
+        return callOriginalEmbed(wrapped, this, config, options);
+    }
 
-        // Explicit 'bio' flag
-        const isBioRequested = (config.bio === true || config.bio === "true") || 
-                               (options.bio === true || options.bio === "true");
-        if (isBioRequested) viewMode = "bio";
+    try {
+        return await renderActorEmbed(this, config, options);
+    } catch (error) {
+        logError(`Failed to render actor embed for ${this.name}`, error);
+        return callOriginalEmbed(wrapped, this, config, options);
+    }
+}
 
-        // Explicit 'ship' flag
-        if (config.ship === true || config.ship === "true") viewMode = "ship";
+function actorOnEmbedWrapper(wrapped, element, ...args) {
+    try {
+        if (typeof wrapped === "function") wrapped(element, ...args);
+    } catch (error) {
+        logError(`Original actor onEmbed failed for ${this.name}`, error);
+    }
 
-        if (config.view) viewMode = config.view;
-        if (config.mode) viewMode = config.mode;
+    attachActorEmbedListeners(this, element);
+}
 
-        const showRolls = config.rolls !== undefined;
-        const compact = config.compact !== undefined;
-        const showBio = config.bio !== "false" && config.bio !== false;
+async function itemToEmbedWrapper(wrapped, config = {}, options = {}) {
+    config ||= {};
+    options ||= {};
 
-        // Determine label
-        const label = config.label || options.label || actor.name;
+    if (!shouldRenderMoshItemEmbed(this, config, options)) {
+        return callOriginalEmbed(wrapped, this, config, options);
+    }
 
-        // Get TextEditor implementation
-        const TextEditorImpl = foundry.applications.ux?.TextEditor?.implementation || TextEditor;
+    try {
+        return await renderItemEmbed(this, config, options);
+    } catch (error) {
+        logError(`Failed to render item embed for ${this.name}`, error);
+        return callOriginalEmbed(wrapped, this, config, options);
+    }
+}
 
-        // Generate enriched link
-        const enrichedLink = await TextEditorImpl.enrichHTML(`@UUID[${actor.uuid}]{${label}}`, {
-            async: true,
+function itemOnEmbedWrapper(wrapped, element, ...args) {
+    try {
+        if (typeof wrapped === "function") wrapped(element, ...args);
+    } catch (error) {
+        logError(`Original item onEmbed failed for ${this.name}`, error);
+    }
+
+    attachItemEmbedListeners(this, element);
+}
+
+function shouldRenderMoshActorEmbed(actor, config = {}, options = {}) {
+    if (actor?.documentName !== "Actor") return false;
+
+    const supportedTypes = new Set(["creature", "ship", "character", "android"]);
+    if (supportedTypes.has(actor.type)) return true;
+
+    return getRequestedViewMode(config, options) !== null;
+}
+
+function shouldRenderMoshItemEmbed(item, config = {}, options = {}) {
+    if (item?.documentName !== "Item") return false;
+    return true;
+}
+
+async function renderActorEmbed(actor, config = {}, options = {}) {
+    const isCreature = actor.type === "creature";
+    const isShip = actor.type === "ship";
+    const isCharacter = actor.type === "character" || actor.type === "android";
+
+    let viewMode = getRequestedViewMode(config, options);
+    if (!viewMode) {
+        viewMode = isCreature ? "statblock" : isShip ? "ship" : "bio";
+    }
+
+    const showRolls = config.rolls !== undefined;
+    const compact = config.compact !== undefined;
+    const showBio = config.bio !== "false" && config.bio !== false;
+    const label = config.label || options.label || actor.name;
+    const TextEditorImpl = getTextEditorImplementation();
+
+    const enrichedLink = await TextEditorImpl.enrichHTML(`@UUID[${actor.uuid}]{${label}}`, {
+        async: true,
+        relativeTo: actor
+    });
+
+    const context = {
+        actor,
+        system: actor.system,
+        config: { ...config, viewMode, showRolls, compact, showBio },
+        label,
+        enrichedLink,
+        isGM: game.user.isGM,
+        isCreature,
+        isShip,
+        isCharacter,
+        isFirstEdition: actor.system.settings?.firstEdition || false,
+        items: actor.items,
+        enrichedBiography: showBio ? await TextEditorImpl.enrichHTML(actor.system.biography || "", {
+            secrets: actor.isOwner,
+            rollData: actor.getRollData?.() || {},
             relativeTo: actor
-        });
-
-        // Prepare context data
-        const context = {
-            actor: actor,
-            system: actor.system,
-            config: { ...config, viewMode, showRolls, compact, showBio },
-            label,
-            enrichedLink,
-            isGM: game.user.isGM,
-            isCreature,
-            isShip,
-            isCharacter,
-            isFirstEdition: actor.system.settings?.firstEdition || false,
-            items: actor.items,
-            // Pre-enrich biography and description
-            enrichedBiography: showBio ? await TextEditorImpl.enrichHTML(
-                actor.system.biography || "", 
-                {
-                    secrets: actor.isOwner,
-                    rollData: actor.getRollData?.() || {},
-                    relativeTo: actor
-                }
-            ) : "",
-            enrichedDescription: showBio ? await TextEditorImpl.enrichHTML(
-                actor.system.description || 
-                (actor.system.desc && actor.system.desc.value) || "", 
-                {
-                    secrets: actor.isOwner,
-                    rollData: actor.getRollData?.() || {},
-                    relativeTo: actor
-                }
-            ) : ""
-        };
-
-        // Determine which template to render
-        let template = TEMPLATES.BIO;
-        if (viewMode === "statblock") template = TEMPLATES.STATBLOCK;
-        if (viewMode === "ship") template = TEMPLATES.SHIP;
-
-        // Render using Foundry's template system
-        const renderFn = foundry.applications.handlebars?.renderTemplate || renderTemplate;
-        const html = await renderFn(template, context);
-
-        // Convert string to DOM element
-        const div = document.createElement("div");
-        div.innerHTML = html;
-        const element = div.firstElementChild;
-
-        return element;
+        }) : "",
+        enrichedDescription: showBio ? await TextEditorImpl.enrichHTML(
+            actor.system.description || (actor.system.desc && actor.system.desc.value) || "",
+            {
+                secrets: actor.isOwner,
+                rollData: actor.getRollData?.() || {},
+                relativeTo: actor
+            }
+        ) : ""
     };
 
-    // --- Override Actor.onEmbed ---
-    ActorClass.prototype.onEmbed = function (element) {
-        const actor = this;
-        
-        // Open Sheet listener
-        const sheetLinks = element.querySelectorAll(".open-sheet");
-        sheetLinks.forEach(link => {
-            link.style.cursor = "pointer";
-            link.addEventListener("click", (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                if (actor.sheet) actor.sheet.render(true);
-            });
-        });
+    let template = TEMPLATES.BIO;
+    if (viewMode === "statblock") template = TEMPLATES.STATBLOCK;
+    if (viewMode === "ship") template = TEMPLATES.SHIP;
 
-        // Compact Bio toggle
-        const toggleBtn = element.querySelector(".mosh-bio-toggle");
-        if (toggleBtn) {
-            toggleBtn.addEventListener("click", (event) => {
-                event.preventDefault();
-                const content = element.querySelector(".mosh-bio-content, .mosh-embed-body");
-                if (content) {
-                    content.classList.toggle("expanded");
-                    toggleBtn.textContent = content.classList.contains("expanded")
-                        ? game.i18n.localize("MOSH.Embeds.ShowLess")
-                        : game.i18n.localize("MOSH.Embeds.ReadMore");
-                }
-            });
-        }
-        
-        // Clickable items for rolls
-        const clickables = element.querySelectorAll(".clickable[data-item-id]");
-        clickables.forEach(el => {
-            el.style.cursor = "pointer";
-            el.addEventListener("click", async (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                const itemId = el.dataset.itemId;
-                const item = actor.items.get(itemId);
-                if (item?.roll) {
-                    item.roll();
-                } else if (item) {
-                    item.sheet.render(true);
-                }
-            });
-        });
-    };
+    return renderTemplateToElement(template, context);
+}
 
-    // --- Override Item.toEmbed ---
-    ItemClass.prototype.toEmbed = async function (config, options = {}) {
-        const item = this;
-        
-        // Determine label
-        const label = config.label || options.label || item.name;
+async function renderItemEmbed(item, config = {}, options = {}) {
+    const label = config.label || options.label || item.name;
+    const TextEditorImpl = getTextEditorImplementation();
+    const enrichedLink = await TextEditorImpl.enrichHTML(`@UUID[${item.uuid}]{${label}}`, {
+        async: true,
+        relativeTo: item
+    });
 
-        // Get TextEditor implementation
-        const TextEditorImpl = foundry.applications.ux?.TextEditor?.implementation || TextEditor;
-
-        const enrichedLink = await TextEditorImpl.enrichHTML(`@UUID[${item.uuid}]{${label}}`, {
-            async: true,
+    return renderTemplateToElement(TEMPLATES.ITEM, {
+        item,
+        system: item.system,
+        config,
+        label,
+        enrichedLink,
+        enrichedDescription: await TextEditorImpl.enrichHTML(item.system.description || "", {
+            secrets: item.isOwner,
+            rollData: item.getRollData?.() || {},
             relativeTo: item
+        })
+    });
+}
+
+function getRequestedViewMode(config = {}, options = {}) {
+    if (hasFlag(config, "statblock") || hasFlag(options, "statblock")) return "statblock";
+    if (config.bio === true || config.bio === "true" || options.bio === true || options.bio === "true") return "bio";
+    if (config.ship === true || config.ship === "true" || options.ship === true || options.ship === "true") return "ship";
+    return config.view || options.view || config.mode || options.mode || null;
+}
+
+function hasFlag(obj, flag) {
+    if (!obj) return false;
+    if (obj[flag] === true || obj[flag] === "true") return true;
+    return Object.keys(obj).some(key => key.toLowerCase() === flag.toLowerCase());
+}
+
+function attachActorEmbedListeners(actor, element) {
+    if (!element) return;
+
+    attachSheetLinks(actor, element);
+
+    const toggleBtn = element.querySelector(".mosh-bio-toggle");
+    if (toggleBtn && !toggleBtn.dataset.moshBound) {
+        toggleBtn.dataset.moshBound = "true";
+        toggleBtn.addEventListener("click", event => {
+            event.preventDefault();
+            const content = element.querySelector(".mosh-bio-content, .mosh-embed-body");
+            if (!content) return;
+
+            content.classList.toggle("expanded");
+            toggleBtn.textContent = content.classList.contains("expanded")
+                ? game.i18n.localize("MOSH.Embeds.ShowLess")
+                : game.i18n.localize("MOSH.Embeds.ReadMore");
         });
+    }
 
-        const context = {
-            item: item,
-            system: item.system,
-            config: config,
-            label,
-            enrichedLink,
-            enrichedDescription: await TextEditorImpl.enrichHTML(
-                item.system.description || "", 
-                {
-                    secrets: item.isOwner,
-                    rollData: item.getRollData?.() || {},
-                    relativeTo: item
-                }
-            )
-        };
-
-        const renderFn = foundry.applications.handlebars?.renderTemplate || renderTemplate;
-        const html = await renderFn(TEMPLATES.ITEM, context);
-        
-        const div = document.createElement("div");
-        div.innerHTML = html;
-        return div.firstElementChild;
-    };
-
-    // Apply same onEmbed logic to Items
-    ItemClass.prototype.onEmbed = function (element) {
-        const item = this;
-        
-        const sheetLinks = element.querySelectorAll(".open-sheet");
-        sheetLinks.forEach(link => {
-            link.style.cursor = "pointer";
-            link.addEventListener("click", (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                if (item.sheet) item.sheet.render(true);
-            });
+    element.querySelectorAll(".clickable[data-item-id]").forEach(clickable => {
+        if (clickable.dataset.moshBound) return;
+        clickable.dataset.moshBound = "true";
+        clickable.style.cursor = "pointer";
+        clickable.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
+            const item = actor.items.get(clickable.dataset.itemId);
+            if (item?.roll) item.roll();
+            else item?.sheet?.render(true);
         });
-    };
+    });
+}
 
-    console.log(`${MODULE_ID} | Registered embed overrides for Mothership`);
+function attachItemEmbedListeners(item, element) {
+    attachSheetLinks(item, element);
+}
+
+function attachSheetLinks(document, element) {
+    element.querySelectorAll(".open-sheet").forEach(link => {
+        if (link.dataset.moshBound) return;
+        link.dataset.moshBound = "true";
+        link.style.cursor = "pointer";
+        link.addEventListener("click", event => {
+            event.preventDefault();
+            event.stopPropagation();
+            document.sheet?.render(true);
+        });
+    });
+}
+
+async function renderTemplateToElement(template, context) {
+    const renderFn = foundry.applications.handlebars?.renderTemplate || globalThis.renderTemplate;
+    const html = await renderFn(template, context);
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    return div.firstElementChild;
+}
+
+function getTextEditorImplementation() {
+    return foundry.applications.ux?.TextEditor?.implementation || globalThis.TextEditor;
+}
+
+async function callOriginalEmbed(wrapped, document, config = {}, options = {}) {
+    if (typeof wrapped === "function") return wrapped(config, options);
+    return fallbackLinkElement(document, config, options);
+}
+
+function fallbackLinkElement(document, config = {}, options = {}) {
+    const label = config.label || options.label || document.name;
+    const anchor = document.createAnchor?.({ label }) || document.toAnchor?.({ label });
+    if (anchor) return anchor;
+
+    const element = document.createElement?.("a") || globalThis.document.createElement("a");
+    element.className = "content-link";
+    element.dataset.uuid = document.uuid;
+    element.textContent = label;
+    return element;
 }

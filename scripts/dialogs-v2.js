@@ -3,7 +3,7 @@
  */
 
 import { MODULE_ID } from "./config.js";
-import { localize } from "./utils.js";
+import { localize, escapeHtml, log, logError } from "./utils.js";
 
 /**
  * Block Panel - ApplicationV2 with Handlebars
@@ -107,8 +107,11 @@ export class MoshBlockPanel extends foundry.applications.api.HandlebarsApplicati
  */
 export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.api.ApplicationV2) {
     constructor(insertRange, existingFigure = null, initialSettings = null, options = {}) {
-        super(options);
+        const { editor = null, onInsert = null, ...appOptions } = options;
+        super(appOptions);
         this.insertRange = insertRange;
+        this.editor = editor;
+        this.onInsert = onInsert;
         this.existingFigure = existingFigure; // For edit mode
         this.isEditMode = !!existingFigure;
         
@@ -193,10 +196,10 @@ export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplica
             if (this.figureSettings.size) className += ` size-${this.figureSettings.size}`;
             if (this.figureSettings.style) className += ` style-${this.figureSettings.style}`;
             
-            let figureHtml = `<figure class="${className}">`;
-            figureHtml += `<img src="${this.figureSettings.path}" alt="">`;
+            let figureHtml = `<figure class="${escapeHtml(className)}">`;
+            figureHtml += `<img src="${escapeHtml(this.figureSettings.path)}" alt="">`;
             if (this.figureSettings.caption) {
-                figureHtml += `<figcaption>${this.figureSettings.caption}</figcaption>`;
+                figureHtml += `<figcaption>${escapeHtml(this.figureSettings.caption)}</figcaption>`;
             }
             figureHtml += `</figure>`;
             
@@ -269,84 +272,26 @@ export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplica
     }
     
     insertFigure() {
-        console.log("[MOSH Figure] Inserting figure with settings:", this.figureSettings);
-        
-        // Build figure HTML string (like Arcane Ink does)
-        let className = 'mosh-figure';
-        if (this.figureSettings.position) className += ` float-${this.figureSettings.position}`;
-        if (this.figureSettings.size) className += ` size-${this.figureSettings.size}`;
-        if (this.figureSettings.style) className += ` style-${this.figureSettings.style}`;
-        
-        let figureHTML = `<figure class="${className}">`;
-        figureHTML += `<img src="${this.figureSettings.path}" alt="${this.figureSettings.caption || ''}">`;
-        if (this.figureSettings.caption) {
-            figureHTML += `<figcaption>${this.figureSettings.caption}</figcaption>`;
-        }
-        figureHTML += `</figure>`;
-        
-        console.log("[MOSH Figure] HTML to insert:", figureHTML);
-        
-        // Find active editor
-        const editor = document.querySelector('.ProseMirror[contenteditable="true"]');
-        if (!editor) {
-            ui.notifications.error("No active editor found");
-            console.error("[MOSH Figure] No editor found!");
-            return;
-        }
-        
-        console.log("[MOSH Figure] Found editor:", editor);
-        
-        // Focus the editor first
-        editor.focus();
-        
-        // If we have a saved range, restore it
-        if (this.insertRange) {
-            try {
-                const rangeContainer = this.insertRange.commonAncestorContainer;
-                if (document.contains(rangeContainer)) {
-                    console.log("[MOSH Figure] Restoring selection from saved range");
-                    const sel = window.getSelection();
-                    sel.removeAllRanges();
-                    sel.addRange(this.insertRange);
-                }
-            } catch (error) {
-                console.warn("[MOSH Figure] Could not restore range:", error);
-            }
-        }
-        
-        // Use execCommand like Arcane Ink does - this works with ProseMirror
         try {
-            const success = document.execCommand('insertHTML', false, figureHTML);
-            console.log("[MOSH Figure] execCommand result:", success);
-            
-            if (success) {
-                ui.notifications.info(`${localize("MOSH.Blocks.Figure")} ${localize("MOSH.Dialog.Inserted")}`);
-            } else {
-                // If execCommand failed, try direct insertion
-                console.warn("[MOSH Figure] execCommand failed, trying direct insertion");
-                
-                const sel = window.getSelection();
-                if (sel.rangeCount > 0) {
-                    const range = sel.getRangeAt(0);
-                    const fragment = range.createContextualFragment(figureHTML);
-                    range.deleteContents();
-                    range.insertNode(fragment);
-                    ui.notifications.info(`${localize("MOSH.Blocks.Figure")} ${localize("MOSH.Dialog.Inserted")}`);
-                } else {
-                    throw new Error("No selection available");
-                }
+            if (this.onInsert) {
+                this.onInsert({ ...this.figureSettings }, { editor: this.editor, range: this.insertRange });
+                return;
             }
+
+            const api = game.modules.get(MODULE_ID)?.api;
+            if (!api?.insertFigure) throw new Error("MOSH insertFigure API is not available");
+            api.insertFigure({ ...this.figureSettings }, { editor: this.editor, range: this.insertRange });
         } catch (error) {
-            console.error("[MOSH Figure] Insert failed:", error);
-            ui.notifications.error("Failed to insert figure");
+            logError("Figure insert failed", error);
+            ui.notifications.error(`${localize("MOSH.Dialog.InsertError")}: ${error.message}`);
         }
     }
     
     updateFigure() {
-        console.log("[MOSH Figure] Updating existing figure:", this.existingFigure);
+        log("Updating existing figure");
         
         if (!this.existingFigure) {
-            console.error("[MOSH Figure] No existing figure to update!");
+            logError("No existing figure to update");
             return;
         }
         
@@ -380,6 +325,6 @@ export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplica
         }
         
         ui.notifications.info(`${localize("MOSH.Blocks.Figure")} ${localize("MOSH.Figure.Updated")}`);
-        console.log("[MOSH Figure] Figure updated successfully");
+        log("Figure updated successfully");
     }
 }

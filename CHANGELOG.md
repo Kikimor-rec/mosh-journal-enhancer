@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-05-21
+
+### Changed
+
+- Stabilized journal editor toolbar registration for Foundry VTT v13/v14 ApplicationV2 and ProseMirror rendering.
+- Added soft compatibility handling for Monk's Enhanced Journal editor containers.
+- Moved toolbar-inserted journal block styles into manifest CSS so saved content renders consistently.
+- Updated figure styles to match inserted classes such as `float-left`, `size-medium`, and `style-polaroid`.
+- Made `enableToolbar` and `enableEmbeds` settings actually gate hook and embed registration.
+- Added `debugLogging` setting for console diagnostics.
+
+### Fixed
+
+- Reworked actor/item embed overrides to use guarded wrappers and libWrapper when available.
+- Added fallback to original embed rendering if MOSH embed template rendering fails.
+- Reduced global DOM polling by removing the toolbar MutationObserver and interval scan.
+- Escaped user-provided figure path/caption content during preview and insertion.
+
 ## [1.0.0] - 2026-01-03
 
 ### Added
@@ -54,7 +72,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.0.1 | 2026-05-21 | Foundry v13/v14 stabilization and Monk's Enhanced Journal compatibility |
 | 1.0.0 | 2026-01-03 | Initial public release |
 
-[Unreleased]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Kikimor-rec/mosh-journal-enhancer/releases/tag/v1.0.0

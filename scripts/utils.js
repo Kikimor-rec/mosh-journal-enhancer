@@ -119,6 +119,25 @@ export function sanitizeHtml(html) {
 }
 
 /**
+ * Escape plain text for safe HTML text/attribute insertion.
+ * @param {string} value - The value to escape
+ * @returns {string} Escaped text
+ */
+export function escapeHtml(value = "") {
+    const temp = document.createElement("div");
+    temp.textContent = String(value);
+    return temp.innerHTML;
+}
+
+/**
+ * Check whether Monk's Enhanced Journal is active.
+ * @returns {boolean}
+ */
+export function isMonksEnhancedJournalActive() {
+    return game.modules.get("monks-enhanced-journal")?.active === true;
+}
+
+/**
  * Generate a unique ID
  * @param {string} prefix - Optional prefix for the ID
  * @returns {string} A unique ID
@@ -163,6 +182,10 @@ export function getCurrentTheme() {
  * @param {*} data - Optional data to log
  */
 export function log(message, data = null) {
+    if (game.ready && game.settings.settings.has(`${MODULE_ID}.debugLogging`) && !getSetting("debugLogging")) {
+        return;
+    }
+
     if (data) {
         console.log(`${MODULE_ID} | ${message}`, data);
     } else {

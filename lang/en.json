@@ -140,5 +140,7 @@
     "MOSH.Settings.EnableToolbar": "Enable Editor Toolbar",
     "MOSH.Settings.EnableToolbarHint": "Add MOSH block buttons to journal editor toolbar",
     "MOSH.Settings.EnableEmbeds": "Enable Custom Embeds",
-    "MOSH.Settings.EnableEmbedsHint": "Override actor/item embed rendering with MOSH statblocks"
+    "MOSH.Settings.EnableEmbedsHint": "Override actor/item embed rendering with MOSH statblocks",
+    "MOSH.Settings.DebugLogging": "Enable Debug Logging",
+    "MOSH.Settings.DebugLoggingHint": "Write MOSH Journal Enhancer diagnostic messages to the browser console"
 }

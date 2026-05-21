@@ -4,7 +4,7 @@
  */
 
 import { BLOCK_TYPES } from "./config.js";
-import { localize, sanitizeHtml } from "./utils.js";
+import { localize, sanitizeHtml, log } from "./utils.js";
 
 /**
  * Generate HTML for a block
@@ -16,7 +16,7 @@ import { localize, sanitizeHtml } from "./utils.js";
 export function generateBlockHTML(type, content = "", options = {}) {
     const blockConfig = BLOCK_TYPES[type];
     if (!blockConfig) {
-        console.warn(`Unknown block type: ${type}`);
+        log(`Unknown block type: ${type}`);
         return content;
     }
     

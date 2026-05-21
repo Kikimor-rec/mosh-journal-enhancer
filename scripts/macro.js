@@ -5,6 +5,7 @@
 
 import { MODULE_ID } from "./config.js";
 import { openBlockPanel } from "./toolbar.js";
+import { log, logError } from "./utils.js";
 
 const MACRO_NAME = "MOSH Block Formatter";
 const MACRO_ICON = "icons/svg/book.svg";
@@ -20,7 +21,7 @@ export async function registerBlockFormatterMacro() {
     // Check if macro already exists
     const existingMacro = game.macros.find(m => m.name === MACRO_NAME);
     if (existingMacro) {
-        console.log(`${MODULE_ID} | Macro already exists: ${MACRO_NAME}`);
+        log(`Macro already exists: ${MACRO_NAME}`);
         return;
     }
     
@@ -48,10 +49,10 @@ if (typeof MoshJournalEnhancer !== "undefined" && MoshJournalEnhancer.openBlockP
             }
         });
         
-        console.log(`${MODULE_ID} | Created macro: ${MACRO_NAME}`);
+        log(`Created macro: ${MACRO_NAME}`);
         ui.notifications.info(`Created macro: ${MACRO_NAME}`);
     } catch (error) {
-        console.error(`${MODULE_ID} | Failed to create macro`, error);
+        logError("Failed to create macro", error);
     }
 }
 
@@ -87,7 +88,7 @@ if (typeof MoshJournalEnhancer !== "undefined" && MoshJournalEnhancer.openBlockP
             }
         });
         
-        console.log(`${MODULE_ID} | Updated macro to version ${MACRO_VERSION}`);
+        log(`Updated macro to version ${MACRO_VERSION}`);
     }
 }
 
