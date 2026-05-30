@@ -11,6 +11,10 @@ const MACRO_NAME = "MOSH Block Formatter";
 const MACRO_ICON = "icons/svg/book.svg";
 const MACRO_VERSION = "1.0.0";
 
+function getMacroDocumentClass() {
+    return CONFIG.Macro?.documentClass || globalThis.Macro;
+}
+
 /**
  * Register the block formatter macro on module ready
  */
@@ -37,7 +41,8 @@ if (typeof MoshJournalEnhancer !== "undefined" && MoshJournalEnhancer.openBlockP
     `.trim();
     
     try {
-        await Macro.create({
+        const MacroDocument = getMacroDocumentClass();
+        await MacroDocument.create({
             name: MACRO_NAME,
             type: "script",
             img: MACRO_ICON,

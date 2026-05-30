@@ -3,7 +3,7 @@
  * A Foundry VTT module for enhancing journal entries with custom blocks
  * 
  * @module mosh-journal-enhancer
- * @version 1.0.1
+ * @version 1.0.2
  * @author Kikimor
  * @license MIT
  */

@@ -4,7 +4,7 @@
  */
 
 import { BLOCK_TYPES } from "./config.js";
-import { localize, sanitizeHtml, log } from "./utils.js";
+import { localize, sanitizeHtml, escapeHtml, log } from "./utils.js";
 
 /**
  * Generate HTML for a block
@@ -72,11 +72,11 @@ export function generateFigureHTML(imageSrc, options = {}) {
     if (size) classes.push(size); // small, medium, large
     if (style) classes.push(style); // polaroid, screen
     
-    let html = `<figure class="${classes.join(" ")}">`;
-    html += `<img src="${imageSrc}" alt="${sanitizeHtml(caption)}" loading="lazy">`;
+    let html = `<figure class="${classes.map(escapeHtml).join(" ")}">`;
+    html += `<img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(caption)}" loading="lazy">`;
     
     if (caption) {
-        html += `<figcaption>${sanitizeHtml(caption)}</figcaption>`;
+        html += `<figcaption>${escapeHtml(caption)}</figcaption>`;
     }
     
     html += "</figure>";
@@ -99,9 +99,9 @@ function generateNavigationContent(exits) {
     for (const exit of exits) {
         html += "<li>";
         if (exit.target) {
-            html += `@UUID[${exit.target}]{${exit.label}}`;
+            html += `@UUID[${escapeHtml(exit.target)}]{${escapeHtml(exit.label)}}`;
         } else {
-            html += exit.label;
+            html += escapeHtml(exit.label);
         }
         html += "</li>";
     }

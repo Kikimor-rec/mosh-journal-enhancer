@@ -3,7 +3,7 @@
  */
 
 import { MODULE_ID } from "./config.js";
-import { localize, escapeHtml, log, logError } from "./utils.js";
+import { localize, log, logError } from "./utils.js";
 
 /**
  * Block Panel - ApplicationV2 with Handlebars
@@ -187,23 +187,11 @@ export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplica
         
         const updatePreview = () => {
             if (!this.figureSettings.path) {
-                preview.innerHTML = `<div class="placeholder">${localize("MOSH.Figure.NoImage")}</div>`;
+                preview.replaceChildren(createPlaceholder(localize("MOSH.Figure.NoImage")));
                 return;
             }
             
-            let className = 'mosh-figure';
-            if (this.figureSettings.position) className += ` float-${this.figureSettings.position}`;
-            if (this.figureSettings.size) className += ` size-${this.figureSettings.size}`;
-            if (this.figureSettings.style) className += ` style-${this.figureSettings.style}`;
-            
-            let figureHtml = `<figure class="${escapeHtml(className)}">`;
-            figureHtml += `<img src="${escapeHtml(this.figureSettings.path)}" alt="">`;
-            if (this.figureSettings.caption) {
-                figureHtml += `<figcaption>${escapeHtml(this.figureSettings.caption)}</figcaption>`;
-            }
-            figureHtml += `</figure>`;
-            
-            preview.innerHTML = figureHtml;
+            preview.replaceChildren(createFigurePreviewElement(this.figureSettings));
         };
         
         // Initial preview
@@ -327,4 +315,32 @@ export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplica
         ui.notifications.info(`${localize("MOSH.Blocks.Figure")} ${localize("MOSH.Figure.Updated")}`);
         log("Figure updated successfully");
     }
+}
+
+function createPlaceholder(text) {
+    const placeholder = document.createElement("div");
+    placeholder.className = "placeholder";
+    placeholder.textContent = text;
+    return placeholder;
+}
+
+function createFigurePreviewElement(settings) {
+    const figure = document.createElement("figure");
+    figure.classList.add("mosh-figure");
+    if (settings.position) figure.classList.add(`float-${settings.position}`);
+    if (settings.size) figure.classList.add(`size-${settings.size}`);
+    if (settings.style) figure.classList.add(`style-${settings.style}`);
+
+    const img = document.createElement("img");
+    img.src = settings.path;
+    img.alt = settings.caption || "";
+    figure.appendChild(img);
+
+    if (settings.caption) {
+        const caption = document.createElement("figcaption");
+        caption.textContent = settings.caption;
+        figure.appendChild(caption);
+    }
+
+    return figure;
 }

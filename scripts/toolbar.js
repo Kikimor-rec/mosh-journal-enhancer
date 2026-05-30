@@ -9,6 +9,7 @@ import { MoshBlockPanel, MoshFigureDialog } from "./dialogs-v2.js";
 
 let toolbarHooksRegistered = false;
 let figureHandlersRegistered = false;
+let toolbarObserverRegistered = false;
 let currentFigureToolbar = null;
 let currentTargetFigure = null;
 let lastActiveEditor = null;
@@ -25,7 +26,11 @@ const TOOLBAR_SELECTORS = [
     ".ProseMirror-menubar",
     ".editor-toolbar",
     ".prosemirror-menu",
-    "[role='menubar']"
+    "[role='menubar']",
+    "menu.editor-menu",
+    "menu.ProseMirror-menu",
+    "menu[role='menubar']",
+    "[data-application-part='editor-menu']"
 ].join(",");
 
 /**
@@ -44,6 +49,10 @@ export function registerToolbarHook() {
         handleEditorRender(app, html, options);
     });
 
+    Hooks.on("renderApplicationV2", (app, html, context, options) => {
+        handleApplicationRender(app, html, options);
+    });
+
     Hooks.on("renderJournalEntrySheet", (app, html, options) => {
         handleSheetRender(app, html, options);
     });
@@ -53,6 +62,7 @@ export function registerToolbarHook() {
     });
 
     registerFigureHandlers();
+    registerToolbarObserver();
     document.addEventListener("selectionchange", rememberCurrentSelection);
     log("Toolbar hooks registered");
 }
@@ -66,17 +76,21 @@ function handleEditorRender(app, html, options = {}) {
     addToolbarToEditor(editor, root);
 }
 
+function handleApplicationRender(app, html, options = {}) {
+    const root = normalizeElement(html) || normalizeElement(app?.element);
+    if (!root) return;
+    if (!isJournalLikeApp(app, root) && !root.querySelector?.(EDITOR_SELECTORS)) return;
+
+    scanForEditors(root, app);
+    queueEditorScan(root, app);
+}
+
 function handleSheetRender(app, html, options = {}) {
     const root = normalizeElement(html) || normalizeElement(app?.element);
     if (!root || !isJournalLikeApp(app, root)) return;
 
-    const editors = root.matches?.(EDITOR_SELECTORS)
-        ? [root]
-        : Array.from(root.querySelectorAll(EDITOR_SELECTORS));
-
-    for (const editor of editors) {
-        addToolbarToEditor(editor, root);
-    }
+    scanForEditors(root, app);
+    queueEditorScan(root, app);
 }
 
 function isJournalLikeApp(app, root) {
@@ -107,6 +121,32 @@ function findScopedEditor(root, app) {
     return candidates.find(editor => editor.isConnected) || null;
 }
 
+function scanForEditors(root = document, app = null) {
+    const normalizedRoot = normalizeElement(root) || document;
+    const editors = normalizedRoot.matches?.(EDITOR_SELECTORS)
+        ? [normalizedRoot]
+        : Array.from(normalizedRoot.querySelectorAll?.(EDITOR_SELECTORS) || []);
+
+    for (const editor of editors) {
+        addToolbarToEditor(editor, normalizedRoot);
+    }
+
+    const appElement = normalizeElement(app?.element);
+    if (appElement && appElement !== normalizedRoot) {
+        const appEditors = appElement.matches?.(EDITOR_SELECTORS)
+            ? [appElement]
+            : Array.from(appElement.querySelectorAll?.(EDITOR_SELECTORS) || []);
+        for (const editor of appEditors) addToolbarToEditor(editor, appElement);
+    }
+}
+
+function queueEditorScan(root = document, app = null) {
+    const scan = () => scanForEditors(root, app);
+    requestAnimationFrame(scan);
+    window.setTimeout(scan, 100);
+    window.setTimeout(scan, 350);
+}
+
 function addToolbarToEditor(editorElement, root = null) {
     if (!editorElement?.isConnected) return;
 
@@ -130,6 +170,9 @@ function findToolbarForEditor(editorElement, container) {
     const previousToolbar = findPreviousSiblingToolbar(editorElement);
     if (previousToolbar) return previousToolbar;
 
+    const adjacentToolbar = findAdjacentToolbar(editorElement);
+    if (adjacentToolbar) return adjacentToolbar;
+
     const toolbars = Array.from(container.querySelectorAll(TOOLBAR_SELECTORS))
         .filter(toolbar => !isMonksNavigationContainer(toolbar));
 
@@ -149,8 +192,19 @@ function findPreviousSiblingToolbar(editorElement) {
     return null;
 }
 
+function findAdjacentToolbar(editorElement) {
+    let node = editorElement.nextElementSibling;
+    while (node) {
+        if (node.matches?.(TOOLBAR_SELECTORS)) return node;
+        const nested = node.querySelector?.(TOOLBAR_SELECTORS);
+        if (nested) return nested;
+        node = node.nextElementSibling;
+    }
+    return null;
+}
+
 function isMonksNavigationContainer(element) {
-    return !!element.closest?.(".directory, .journal-sidebar, .journal-list, .pages-list, .tab-bar, .tabs, nav");
+    return !!element.closest?.(".directory, .journal-sidebar, .journal-list, .pages-list, .tab-bar, .tabs");
 }
 
 function addMoshToolbarButton(toolbar, editorElement) {
@@ -576,6 +630,28 @@ function hideFigureToolbar() {
     currentFigureToolbar?.remove();
     currentFigureToolbar = null;
     currentTargetFigure = null;
+}
+
+function registerToolbarObserver() {
+    if (toolbarObserverRegistered) return;
+    toolbarObserverRegistered = true;
+
+    const observer = new MutationObserver(mutations => {
+        for (const mutation of mutations) {
+            for (const node of mutation.addedNodes) {
+                if (!(node instanceof HTMLElement)) continue;
+                if (node.matches?.(EDITOR_SELECTORS) || node.querySelector?.(EDITOR_SELECTORS)) {
+                    queueEditorScan(node);
+                    continue;
+                }
+                if (node.matches?.(TOOLBAR_SELECTORS) || node.querySelector?.(TOOLBAR_SELECTORS)) {
+                    queueEditorScan(document);
+                }
+            }
+        }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
 }
 
 /**

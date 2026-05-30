@@ -1,6 +1,6 @@
 ﻿# MOSH Journal Enhancer
 
-![Foundry Version](https://img.shields.io/badge/Foundry-v13-informational)
+![Foundry Version](https://img.shields.io/badge/Foundry-v13%20%7C%20v14-informational)
 ![Mothership RPG](https://img.shields.io/badge/System-Mothership%20RPG-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Latest Release](https://img.shields.io/github/v/release/Kikimor-rec/mosh-journal-enhancer?label=Latest%20Release)
@@ -125,7 +125,7 @@ Or paste HTML directly:
 
 | Component | Version |
 |-----------|---------|
-| Foundry VTT | v13+ |
+| Foundry VTT | v13-v14 |
 | [Mothership RPG System](https://github.com/Futil/foundry-mothership) | 0.6.0+ |
 
 ---
@@ -273,7 +273,7 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 | Компонент | Версия |
 |-----------|--------|
-| Foundry VTT | v13+ |
+| Foundry VTT | v13-v14 |
 | [Mothership RPG System](https://github.com/Futil/foundry-mothership) | 0.6.0+ |
 
 ---

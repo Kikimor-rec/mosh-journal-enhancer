@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-05-30
+
+### Changed
+
+- Verified compatibility metadata for Foundry VTT v14 while keeping v13 as the minimum supported version.
+- Removed Monk's Enhanced Journal from package relationships; compatibility remains soft and optional.
+- Switched actor/item `@Embed` rendering to Foundry document embed handlers when available, with guarded legacy wrappers as fallback.
+- Improved journal toolbar discovery for Foundry v13/v14 ApplicationV2, ProseMirror, and Monk's Enhanced Journal editor containers.
+
+### Fixed
+
+- Restored MOSH block and image toolbar buttons in dynamically rendered journal editors.
+- Avoided string-built figure preview HTML in the figure dialog.
+- Escaped generated figure and navigation block parameters.
+
 ## [1.0.1] - 2026-05-21
 
 ### Changed
@@ -63,7 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Built with ApplicationV2 for dialogs
 - ES Modules architecture
-- Compatible with Foundry VTT v13+
+- Compatible with Foundry VTT v13-v14
 - Requires Mothership RPG system
 
 ---
@@ -72,9 +87,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.0.2 | 2026-05-30 | Foundry v14 compatibility, optional Monk's support, toolbar restoration |
 | 1.0.1 | 2026-05-21 | Foundry v13/v14 stabilization and Monk's Enhanced Journal compatibility |
 | 1.0.0 | 2026-01-03 | Initial public release |
 
-[Unreleased]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Kikimor-rec/mosh-journal-enhancer/releases/tag/v1.0.0

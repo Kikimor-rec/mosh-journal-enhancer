@@ -7,6 +7,7 @@ import { MODULE_ID, TEMPLATES } from "./config.js";
 import { log, logError } from "./utils.js";
 
 const PATCH_MARKER = Symbol.for(`${MODULE_ID}.embedOverridesRegistered`);
+const HANDLER_MARKER = Symbol.for(`${MODULE_ID}.embedHandlersRegistered`);
 const ORIGINALS = {
     actorToEmbed: null,
     actorOnEmbed: null,
@@ -15,7 +16,7 @@ const ORIGINALS = {
 };
 
 /**
- * Register embed wrappers for the Mothership system.
+ * Register embed renderers for the Mothership system.
  */
 export function registerEmbedOverrides() {
     if (game.system.id !== "mosh") {
@@ -23,6 +24,30 @@ export function registerEmbedOverrides() {
         return;
     }
 
+    if (registerDocumentEmbedHandlers()) return;
+    registerLegacyEmbedWrappers();
+}
+
+function registerDocumentEmbedHandlers() {
+    if (!Array.isArray(CONFIG.Actor?.embedHandlers) || !Array.isArray(CONFIG.Item?.embedHandlers)) {
+        return false;
+    }
+
+    if (!CONFIG.Actor[HANDLER_MARKER]) {
+        CONFIG.Actor.embedHandlers.unshift(actorEmbedHandler);
+        CONFIG.Actor[HANDLER_MARKER] = true;
+    }
+
+    if (!CONFIG.Item[HANDLER_MARKER]) {
+        CONFIG.Item.embedHandlers.unshift(itemEmbedHandler);
+        CONFIG.Item[HANDLER_MARKER] = true;
+    }
+
+    log("Registered document embed handlers for Mothership");
+    return true;
+}
+
+function registerLegacyEmbedWrappers() {
     const ActorClass = CONFIG.Actor.documentClass;
     const ItemClass = CONFIG.Item.documentClass;
     if (!ActorClass?.prototype || !ItemClass?.prototype) return;
@@ -60,6 +85,32 @@ export function registerEmbedOverrides() {
     ActorClass.prototype[PATCH_MARKER] = true;
     ItemClass.prototype[PATCH_MARKER] = true;
     log("Registered embed wrappers for Mothership");
+}
+
+async function actorEmbedHandler(actor, content, config = {}, options = {}) {
+    if (!shouldRenderMoshActorEmbed(actor, config, options)) return null;
+
+    try {
+        const element = await renderActorEmbed(actor, config, options);
+        attachActorEmbedListeners(actor, element);
+        return element;
+    } catch (error) {
+        logError(`Failed to render actor embed for ${actor.name}`, error);
+        return null;
+    }
+}
+
+async function itemEmbedHandler(item, content, config = {}, options = {}) {
+    if (!shouldRenderMoshItemEmbed(item, config, options)) return null;
+
+    try {
+        const element = await renderItemEmbed(item, config, options);
+        attachItemEmbedListeners(item, element);
+        return element;
+    } catch (error) {
+        logError(`Failed to render item embed for ${item.name}`, error);
+        return null;
+    }
 }
 
 async function actorToEmbedWrapper(wrapped, config = {}, options = {}) {

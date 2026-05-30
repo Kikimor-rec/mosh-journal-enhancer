@@ -5,7 +5,7 @@
   "version": "#{VERSION}#",
   "compatibility": {
     "minimum": "13",
-    "verified": "13"
+    "verified": "14"
   },
   "authors": [
     {
@@ -22,17 +22,6 @@
         "manifest": "https://github.com/Futil/foundry-mothership/releases/latest/download/system.json",
         "compatibility": {
           "minimum": "0.1.0"
-        }
-      }
-    ],
-    "recommends": [
-      {
-        "id": "monks-enhanced-journal",
-        "type": "module",
-        "manifest": "https://github.com/ironmonk108/monks-enhanced-journal/releases/latest/download/module.json",
-        "compatibility": {
-          "minimum": "13",
-          "verified": "13"
         }
       }
     ]
