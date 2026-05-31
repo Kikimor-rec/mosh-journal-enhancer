@@ -4,7 +4,7 @@
  */
 
 export const MODULE_ID = "mosh-journal-enhancer";
-export const MODULE_VERSION = "1.0.2";
+export const MODULE_VERSION = "1.0.3";
 
 // Template paths
 export const TEMPLATES = {

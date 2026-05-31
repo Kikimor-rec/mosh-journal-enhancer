@@ -583,13 +583,15 @@ function updateToolbarButtons(figure, toolbar) {
 }
 
 function handleToolbarAction(figure, action, value) {
+    const editor = figure.closest(EDITOR_SELECTORS);
+    const oldClassName = figure.className;
+
     if (action === "delete") {
         if (confirm(localize("MOSH.Figure.DeleteConfirm") || "Delete this image?")) {
-            const editor = figure.closest(EDITOR_SELECTORS);
-            figure.remove();
+            const deleted = deleteFigureThroughEditor(figure, editor);
             hideFigureToolbar();
-            if (editor) notifyEditorChanged(editor);
-            ui.notifications.info(localize("MOSH.Figure.Deleted"));
+            log("Figure toolbar delete", { action, editorFound: !!editor, deleted, oldClassName });
+            if (deleted) ui.notifications.info(localize("MOSH.Figure.Deleted"));
         }
         return;
     }
@@ -605,24 +607,83 @@ function handleToolbarAction(figure, action, value) {
     if (action === "size") currentSize = value;
     if (action === "style") currentStyle = value;
 
-    const classes = ["mosh-figure"];
-    if (currentPosition !== "inline") classes.push(`float-${currentPosition}`);
-    classes.push(`size-${currentSize}`);
-    if (currentStyle !== "default") classes.push(`style-${currentStyle}`);
-    if (figure.classList.contains("mosh-figure-selected")) classes.push("mosh-figure-selected");
+    const newClasses = buildFigureClasses({
+        position: currentPosition,
+        size: currentSize,
+        style: currentStyle
+    });
+    const updatedFigure = replaceFigureThroughEditor(figure, editor, newClasses);
+    log("Figure toolbar action", {
+        action,
+        value,
+        editorFound: !!editor,
+        updated: !!updatedFigure,
+        oldClassName,
+        newClassName: newClasses.join(" ")
+    });
 
-    figure.className = classes.join(" ");
-    figure.setAttribute("data-mosh-updated", Date.now().toString());
+    if (!updatedFigure) return;
 
-    const editor = figure.closest(EDITOR_SELECTORS);
-    if (editor) notifyEditorChanged(editor);
+    currentTargetFigure = updatedFigure;
+    updatedFigure.classList.add("mosh-figure-selected");
 
-    if (currentFigureToolbar) updateToolbarButtons(figure, currentFigureToolbar);
+    if (currentFigureToolbar) updateToolbarButtons(updatedFigure, currentFigureToolbar);
     requestAnimationFrame(() => {
-        if (currentFigureToolbar && currentTargetFigure === figure) {
-            positionFigureToolbar(figure, currentFigureToolbar);
+        if (currentFigureToolbar && currentTargetFigure === updatedFigure) {
+            positionFigureToolbar(updatedFigure, currentFigureToolbar);
         }
     });
+}
+
+function buildFigureClasses({ position = "inline", size = "medium", style = "default" } = {}) {
+    const classes = ["mosh-figure"];
+    if (position === "left" || position === "right") classes.push(`float-${position}`);
+    classes.push(size === "small" || size === "large" ? `size-${size}` : "size-medium");
+    if (style === "polaroid" || style === "screen") classes.push(`style-${style}`);
+    return classes;
+}
+
+function replaceFigureThroughEditor(figure, editor, classes) {
+    if (!figure?.isConnected || !editor?.contains(figure)) return null;
+
+    const marker = `mosh-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const html = buildFigureHTMLFromElement(figure, classes, marker);
+    const range = document.createRange();
+    range.selectNode(figure);
+
+    const inserted = insertHTMLIntoActiveEditor(html, { editor, range });
+    if (!inserted) return null;
+
+    const newFigure = editor.querySelector(`figure.mosh-figure[data-mosh-figure-id="${marker}"]`);
+    if (!newFigure) return null;
+
+    newFigure.removeAttribute("data-mosh-figure-id");
+    notifyEditorChanged(editor);
+    return newFigure;
+}
+
+function deleteFigureThroughEditor(figure, editor) {
+    if (!figure?.isConnected || !editor?.contains(figure)) return false;
+
+    const range = document.createRange();
+    range.selectNode(figure);
+    range.deleteContents();
+    notifyEditorChanged(editor);
+    return true;
+}
+
+function buildFigureHTMLFromElement(figure, classes, marker = "") {
+    const img = figure.querySelector("img");
+    const caption = figure.querySelector("figcaption")?.textContent?.trim() || "";
+    const attrs = marker ? ` data-mosh-figure-id="${escapeHtml(marker)}"` : "";
+
+    let html = `<figure class="${classes.map(escapeHtml).join(" ")}"${attrs}>`;
+    if (img) {
+        html += `<img src="${escapeHtml(img.getAttribute("src") || "")}" alt="${escapeHtml(img.getAttribute("alt") || "")}" loading="${escapeHtml(img.getAttribute("loading") || "lazy")}">`;
+    }
+    if (caption) html += `<figcaption>${escapeHtml(caption)}</figcaption>`;
+    html += "</figure>";
+    return html;
 }
 
 function hideFigureToolbar() {

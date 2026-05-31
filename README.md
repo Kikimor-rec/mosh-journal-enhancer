@@ -15,6 +15,7 @@
 A comprehensive Foundry VTT module for **Mothership RPG** that enhances Journal Entries with:
 - **Actor/Item Embeds** - Interactive statblocks and bio cards
 - **Custom Blocks** - Narrative boxes, warnings, terminal output, and more
+- **Figure Tools** - Insert images, captions, float layout, size presets, and visual styles
 - **Light/Dark Theme Support** - Automatic adaptation to journal theme
 
 ---
@@ -63,6 +64,8 @@ A comprehensive Foundry VTT module for **Mothership RPG** that enhances Journal 
   * **Characters** → Bio card view (portrait + biography)
   * **Ships** → Ship vitals view
 * **Interactive**: Click to open full Actor sheet
+* **Item Cards**: `@Embed[Item.UUID]` renders a compact MOSH item card with enriched description.
+* **View Flags**: `statblock`, `bio=true`, `ship`, `view=...`, and `mode=...` can override the automatic actor view.
 
 ### Custom Blocks
 Insert styled content blocks in your journals:
@@ -74,6 +77,12 @@ Insert styled content blocks in your journals:
 * **Warden** - GM tips and advice
 * **Info** - Important rules and information
 
+### Figure Tools
+* **Insert Figure**: Use the Image button in the journal editor toolbar to choose an image, caption, position, size, and style.
+* **Inline Toolbar**: Click an inserted MOSH figure while editing to change position, size, style, or delete the figure.
+* **Layout Contract**: Figures use `float-left` / `float-right`, `size-small` / `size-medium` / `size-large`, and `style-polaroid` / `style-screen` classes.
+* **Soft Compatibility**: Works with the default Foundry journal editor and adapts to Monk's Enhanced Journal when that module is active.
+
 ---
 
 ## Usage
@@ -83,6 +92,8 @@ Insert styled content blocks in your journals:
 @Embed[Actor.UUID]           <!-- Smart default -->
 @Embed[Actor.UUID statblock] <!-- Force statblock -->
 @Embed[Actor.UUID bio=true]  <!-- Force bio card -->
+@Embed[Actor.UUID ship]      <!-- Force ship card -->
+@Embed[Item.UUID]            <!-- MOSH item card -->
 ```
 
 ### Custom Blocks
@@ -99,6 +110,14 @@ Or paste HTML directly:
   <p>The corridor stretches into darkness...</p>
 </div>
 ```
+
+### Image/Figure Workflow
+1. Open a journal page in edit mode.
+2. Click the **Image** button added by MOSH Journal Enhancer.
+3. Select an image with the Foundry file picker.
+4. Choose position, size, style, and optional caption.
+5. Click the inserted image later to open the inline figure toolbar.
+6. Use the toolbar to switch left/inline/right layout, small/medium/large size, default/polaroid/screen style, or delete the figure.
 
 ---
 
@@ -128,6 +147,18 @@ Or paste HTML directly:
 | Foundry VTT | v13-v14 |
 | [Mothership RPG System](https://github.com/Futil/foundry-mothership) | 0.6.0+ |
 
+Monk's Enhanced Journal is optional. The module does not depend on it or recommend it in the manifest, but it will detect it when active and adapt toolbar placement for Monk's journal editors.
+
+---
+
+## Settings
+
+| Setting | Scope | Default | Description |
+|---------|-------|---------|-------------|
+| Enable Editor Toolbar | Client | On | Adds MOSH Blocks and Image buttons to journal editor toolbars |
+| Enable Custom Embeds | World | On | Replaces actor/item embed rendering with MOSH cards |
+| Enable Debug Logging | Client | Off | Writes toolbar/embed diagnostics to the browser console |
+
 ---
 
 ## Block Types Reference
@@ -141,6 +172,24 @@ Or paste HTML directly:
 | Navigation | `navigation-block` | Location links and exits |
 | Warden | `warden-block` | GM tips and advice |
 | Info | `info-block` | Rules and important info |
+
+### Figure Classes Reference
+
+| Option | Classes |
+|--------|---------|
+| Position | `float-left`, `float-right`, or no float class for inline |
+| Size | `size-small`, `size-medium`, `size-large` |
+| Style | `style-polaroid`, `style-screen`, or no style class for default |
+
+---
+
+## Troubleshooting
+
+* Make sure the journal page is in edit mode; figure toolbar actions only work inside an editable ProseMirror journal editor.
+* If the MOSH toolbar is missing, confirm **Enable Editor Toolbar** is enabled in module settings and reopen the journal page.
+* If a figure toolbar button appears to do nothing, enable **Debug Logging** and check the browser console for `Figure toolbar action` messages.
+* If installing from a manifest, prefer `https://github.com/Kikimor-rec/mosh-journal-enhancer/releases/latest/download/module.json`.
+* If Monk's Enhanced Journal is active, test once in a default Foundry journal page as well to isolate module compatibility issues.
 
 ---
 
@@ -163,6 +212,7 @@ MIT License - See [LICENSE](LICENSE) for details.
 Комплексный модуль для **Mothership RPG** в Foundry VTT, улучшающий Журналы:
 - **Встраиваемые карточки** - Интерактивные статблоки и био-карточки
 - **Пользовательские блоки** - Нарратив, терминал, предупреждения и другое
+- **Инструменты изображений** - Вставка картинок, подписи, обтекание, размеры и визуальные стили
 - **Поддержка тем** - Автоматическая адаптация к светлой/тёмной теме
 
 ---
@@ -211,6 +261,8 @@ MIT License - See [LICENSE](LICENSE) for details.
   * **Персонажи** → Био-карточка (портрет + биография)
   * **Корабли** → Характеристики корабля
 * **Интерактивность**: Клик открывает полный лист актера
+* **Карточки предметов**: `@Embed[Item.UUID]` отображает компактную карточку предмета MOSH с обработанным описанием.
+* **Флаги вида**: `statblock`, `bio=true`, `ship`, `view=...` и `mode=...` могут переопределить автоматический выбор вида.
 
 ### Пользовательские Блоки
 Вставляйте стилизованные блоки контента в журналы:
@@ -222,6 +274,12 @@ MIT License - See [LICENSE](LICENSE) for details.
 * **Warden** - Советы для Ведущего
 * **Info** - Важные правила и информация
 
+### Инструменты изображений
+* **Вставка Figure**: Кнопка Image в панели редактора позволяет выбрать картинку, подпись, позицию, размер и стиль.
+* **Встроенное меню**: Клик по вставленной MOSH-картинке в режиме редактирования открывает меню позиции, размера, стиля и удаления.
+* **Контракт классов**: Используются классы `float-left` / `float-right`, `size-small` / `size-medium` / `size-large`, `style-polaroid` / `style-screen`.
+* **Мягкая совместимость**: Работает со стандартным редактором Foundry и адаптируется под Monk's Enhanced Journal, если он активен.
+
 ---
 
 ## Использование
@@ -231,6 +289,8 @@ MIT License - See [LICENSE](LICENSE) for details.
 @Embed[Actor.UUID]           <!-- Авто-режим -->
 @Embed[Actor.UUID statblock] <!-- Принудительный статблок -->
 @Embed[Actor.UUID bio=true]  <!-- Принудительная био-карточка -->
+@Embed[Actor.UUID ship]      <!-- Принудительная карточка корабля -->
+@Embed[Item.UUID]            <!-- Карточка предмета MOSH -->
 ```
 
 ### Пользовательские Блоки
@@ -247,6 +307,14 @@ MIT License - See [LICENSE](LICENSE) for details.
   <p>Коридор уходит во тьму...</p>
 </div>
 ```
+
+### Работа с изображениями
+1. Откройте страницу журнала в режиме редактирования.
+2. Нажмите кнопку **Image**, добавленную MOSH Journal Enhancer.
+3. Выберите картинку через файловый менеджер Foundry.
+4. Настройте позицию, размер, стиль и необязательную подпись.
+5. Позже кликните по вставленной картинке, чтобы открыть встроенное меню.
+6. Используйте меню для переключения left/inline/right, small/medium/large, default/polaroid/screen или удаления картинки.
 
 ---
 
@@ -276,6 +344,8 @@ MIT License - See [LICENSE](LICENSE) for details.
 | Foundry VTT | v13-v14 |
 | [Mothership RPG System](https://github.com/Futil/foundry-mothership) | 0.6.0+ |
 
+Monk's Enhanced Journal не является зависимостью. Модуль не требует и не рекомендует его в manifest, но обнаруживает активный Monk's Enhanced Journal и адаптирует расположение кнопок в его редакторах.
+
 ---
 
 ## Настройки
@@ -284,6 +354,7 @@ MIT License - See [LICENSE](LICENSE) for details.
 |-----------|----------|--------------|
 | Панель инструментов | Добавить кнопки MOSH в редактор | ✓ Включено |
 | Кастомные вставки | Заменить отображение вставок актёров | ✓ Включено |
+| Debug Logging | Писать диагностические сообщения в консоль браузера | Выключено |
 
 ---
 
@@ -298,6 +369,24 @@ MIT License - See [LICENSE](LICENSE) for details.
 | Навигация | `navigation-block` | Ссылки на локации |
 | Ведущему | `warden-block` | Советы для GM |
 | Информация | `info-block` | Правила и важная информация |
+
+### Справочник классов изображений
+
+| Опция | Классы |
+|-------|--------|
+| Позиция | `float-left`, `float-right` или без float-класса для inline |
+| Размер | `size-small`, `size-medium`, `size-large` |
+| Стиль | `style-polaroid`, `style-screen` или без style-класса для обычного вида |
+
+---
+
+## Диагностика
+
+* Убедитесь, что страница журнала открыта в режиме редактирования; меню изображения работает только внутри editable ProseMirror-редактора.
+* Если кнопки MOSH не появились, проверьте настройку **Enable Editor Toolbar** и переоткройте журнал.
+* Если кнопка меню изображения не даёт эффекта, включите **Debug Logging** и проверьте консоль браузера на сообщения `Figure toolbar action`.
+* Для установки через manifest используйте `https://github.com/Kikimor-rec/mosh-journal-enhancer/releases/latest/download/module.json`.
+* Если активен Monk's Enhanced Journal, проверьте тот же сценарий в обычном журнале Foundry, чтобы отделить проблему совместимости.
 
 ---
 

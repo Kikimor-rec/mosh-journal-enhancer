@@ -44,20 +44,39 @@ jobs:
             -x "*.git*" \
             -x "*node_modules/*"
 
+      - name: Build release notes from changelog
+        run: |
+          awk -v version="${{ steps.get_version.outputs.VERSION }}" '
+            $0 ~ "^## \\[" version "\\]" { in_section=1; next }
+            in_section && $0 ~ "^## \\[" { exit }
+            in_section { print }
+          ' CHANGELOG.md > CHANGELOG_SECTION.md
+
+          if [ ! -s CHANGELOG_SECTION.md ]; then
+            echo "No changelog section found for v${{ steps.get_version.outputs.VERSION }}." > CHANGELOG_SECTION.md
+          fi
+
+          {
+            echo "## Changes"
+            echo
+            cat CHANGELOG_SECTION.md
+            echo
+            echo "## Installation"
+            echo
+            echo "**Manifest URL:** \`https://github.com/${{ github.repository }}/releases/download/v${{ steps.get_version.outputs.VERSION }}/module.json\`"
+            echo
+            echo "Or use the latest manifest: \`https://github.com/${{ github.repository }}/releases/latest/download/module.json\`"
+          } > RELEASE_NOTES.md
+
       - name: Update Release with Files
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
           name: v${{ steps.get_version.outputs.VERSION }}
-          draft: false
+          draft: true
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: './module.json, ./${{ env.ZIP_NAME }}'
           tag: v${{ steps.get_version.outputs.VERSION }}
-          generateReleaseNotes: true
-          body: |
-            ## Installation
-            
-            **Manifest URL:** `https://github.com/${{ github.repository }}/releases/download/v${{ steps.get_version.outputs.VERSION }}/module.json`
-            
-            Or use the latest manifest: `https://github.com/${{ github.repository }}/releases/latest/download/module.json`
+          generateReleaseNotes: false
+          bodyFile: RELEASE_NOTES.md

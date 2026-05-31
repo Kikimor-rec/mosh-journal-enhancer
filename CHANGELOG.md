@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-05-31
+
+### Added
+
+- Added release workflow support for draft releases with release notes generated from the matching changelog section.
+- Expanded README documentation for embeds, journal blocks, figure tools, settings, optional Monk's Enhanced Journal compatibility, and troubleshooting.
+
+### Fixed
+
+- Fixed the inline figure toolbar so position, size, style, and delete actions update the ProseMirror editor content through the editor insertion/update path instead of mutating DOM classes directly.
+- Added debug diagnostics for figure toolbar actions when debug logging is enabled.
+
 ## [1.0.2] - 2026-05-30
 
 ### Changed
@@ -87,11 +99,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.0.3 | 2026-05-31 | Figure toolbar persistence, draft release notes, expanded documentation |
 | 1.0.2 | 2026-05-30 | Foundry v14 compatibility, optional Monk's support, toolbar restoration |
 | 1.0.1 | 2026-05-21 | Foundry v13/v14 stabilization and Monk's Enhanced Journal compatibility |
 | 1.0.0 | 2026-01-03 | Initial public release |
 
-[Unreleased]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Kikimor-rec/mosh-journal-enhancer/releases/tag/v1.0.0
