@@ -79,6 +79,32 @@
     "MOSH.Blocks.InfoHint": "Правила, механики, важная информация",
     "MOSH.Blocks.InfoPlaceholder": "Важные правила или механики...",
     
+    "MOSH.Blocks.Paper": "Бумажная Записка",
+    "MOSH.Blocks.PaperHint": "Рукописные заметки или старые документы",
+    "MOSH.Blocks.PaperPlaceholder": "Написанные от руки слова...",
+
+    "MOSH.Effects.None": "Нет",
+    "MOSH.Effects.Glitch": "Глитч (Помехи)",
+    "MOSH.Effects.Typewriter": "Печатная машинка",
+    "MOSH.Effects.Corrupt": "Повреждение данных",
+    "MOSH.Effects.Scramble": "Искажение (Дрожание)",
+    "MOSH.Effects.Redacted": "Засекречено",
+    "MOSH.Effects.Flicker": "Мерцание",
+    
+    "MOSH.Effects.SelectEffect": "Текстовый эффект",
+    "MOSH.Effects.ApplyInline": "Применить к выделению",
+    "MOSH.Effects.DialogTitle": "Текстовые эффекты MOSH",
+    "MOSH.Effects.Intensity": "Интенсивность",
+    "MOSH.Effects.Subtle": "Слабее",
+    "MOSH.Effects.Strong": "Сильнее",
+    "MOSH.Effects.RedactedColor": "Цвет заглушки",
+    "MOSH.Effects.PaperModifiers": "Стиль бумаги",
+    "MOSH.Effects.PaperDefault": "Обычная",
+    "MOSH.Effects.PaperLined": "В линейку",
+    "MOSH.Effects.PaperAged": "Состаренная",
+    "MOSH.Effects.PaperStained": "С пятнами",
+    "MOSH.Effects.PaperPinned": "С кнопкой",
+    
     "MOSH.Blocks.Figure": "Изображение",
     "MOSH.Blocks.FigureHint": "Изображение с подписью, может обтекаться текстом",
     
@@ -132,13 +158,33 @@
     
     "MOSH.Toolbar.Blocks": "Блоки",
     "MOSH.Toolbar.BlocksTitle": "Блоки форматирования MOSH",
+    "MOSH.Toolbar.Effects": "Эффекты",
+    "MOSH.Toolbar.EffectsTitle": "Применить текстовые эффекты MOSH",
+    "MOSH.Toolbar.Color": "Цвет",
+    "MOSH.Toolbar.ColorTitle": "Изменить цвет текста",
     "MOSH.Toolbar.Image": "Изображение",
     "MOSH.Toolbar.ImageTitle": "Вставить изображение",
     "MOSH.Toolbar.FormatDialog": "Диалог форматирования...",
     "MOSH.Toolbar.FormatDialogHint": "Открыть полный диалог форматирования",
+
+    "MOSH.Color.DialogTitle": "Цвет текста MOSH",
+    "MOSH.Color.TextColor": "Цвет текста",
+    "MOSH.Color.ThemeColors": "Цвета темы",
+    "MOSH.Color.InvalidColor": "Введите корректный hex-цвет",
+    "MOSH.Color.InvalidSelection": "Не удалось применить цвет к этому выделению",
+    "MOSH.Color.Primary": "Текст",
+    "MOSH.Color.Accent": "Акцент",
+    "MOSH.Color.Warning": "Опасность",
+    "MOSH.Color.Terminal": "Терминал",
+    "MOSH.Color.Signal": "Сигнал",
+    "MOSH.Color.Critical": "Критический",
+    "MOSH.Color.Dark": "Темный",
+    "MOSH.Color.Slate": "Серый",
     
     "MOSH.Settings.EnableToolbar": "Панель инструментов редактора",
-    "MOSH.Settings.EnableToolbarHint": "Добавить кнопки блоков MOSH в панель редактора журнала",
+    "MOSH.Settings.EnableToolbarHint": "Добавить кнопки Blocks, Effects, Color и Image в панель редактора журнала",
     "MOSH.Settings.EnableEmbeds": "Кастомные вставки",
-    "MOSH.Settings.EnableEmbedsHint": "Заменить отображение вставок актёров/предметов на статблоки MOSH"
+    "MOSH.Settings.EnableEmbedsHint": "Заменить отображение вставок актёров/предметов на статблоки MOSH",
+    "MOSH.Settings.DebugLogging": "Включить отладочные логи",
+    "MOSH.Settings.DebugLoggingHint": "Писать диагностические сообщения MOSH Journal Enhancer в консоль браузера"
 }

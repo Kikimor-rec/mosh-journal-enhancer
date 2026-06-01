@@ -68,9 +68,9 @@ export function generateFigureHTML(imageSrc, options = {}) {
     
     // Build class list
     const classes = ["mosh-figure"];
-    if (position) classes.push(position); // left, right
-    if (size) classes.push(size); // small, medium, large
-    if (style) classes.push(style); // polaroid, screen
+    if (position === "left" || position === "right") classes.push(`float-${position}`);
+    classes.push(size === "small" || size === "large" ? `size-${size}` : "size-medium");
+    if (style === "polaroid" || style === "screen") classes.push(`style-${style}`);
     
     let html = `<figure class="${classes.map(escapeHtml).join(" ")}">`;
     html += `<img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(caption)}" loading="lazy">`;

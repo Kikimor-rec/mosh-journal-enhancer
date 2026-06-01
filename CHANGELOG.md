@@ -7,17 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.3] - 2026-05-31
+## [1.1.0] - 2026-06-01
 
 ### Added
 
 - Added release workflow support for draft releases with release notes generated from the matching changelog section.
-- Expanded README documentation for embeds, journal blocks, figure tools, settings, optional Monk's Enhanced Journal compatibility, and troubleshooting.
+- Expanded README documentation for embeds, journal blocks, text effects, color tools, figure tools, settings, optional Monk's Enhanced Journal compatibility, and troubleshooting.
+- Added ProseMirror-native MOSH toolbar controls for Blocks, Effects, Color, and Image.
+- Added mark-based inline effect and color insertion so colors, fonts, and MOSH effects can stack on selected text.
+- Added scoped runtime handling for dynamic text effects so animated text does not mutate ProseMirror content on timers.
+- Added a small Mothership system compatibility adapter for embed data used across MoSh 0.6.x.
+- Added a compact text color tool with theme-derived swatches.
+- Added mask color choices for redacted/secret text.
+
+### Changed
+
+- Reworked Data Corruption to stay readable in edit mode and render randomized replacement characters only in journal view mode.
+- Optimized the Data Corruption scheduler so dynamic text effects do not create one timer per text span.
+- Removed unused legacy dialog style injection; current block, effect, and figure styles are loaded through the manifest CSS files.
+- Kept DOM/`execCommand` insertion paths as compatibility fallbacks behind the ProseMirror-first editor integration.
 
 ### Fixed
 
 - Fixed the inline figure toolbar so position, size, style, and delete actions update the ProseMirror editor content through the editor insertion/update path instead of mutating DOM classes directly.
 - Added debug diagnostics for figure toolbar actions when debug logging is enabled.
+- Fixed Data Corruption overlays bleeding through Foundry windows by scoping the overlay layer to the owning journal/application window.
+- Fixed Data Corruption visibility so the animated random-character overlay is not hidden by normal parent/editor elements.
+- Reworked Data Corruption runtime to animate random characters through stylesheet rules instead of a fragile positioned overlay.
+- Kept Data Corruption readable in ProseMirror edit mode while animating only in journal view mode.
+- Improved Data Corruption styling so inherited text colors can affect the animated output.
+- Reworked Data Corruption markup into source/frame layers so view-mode length follows the original text and the real text is not selected/copied from journal view.
+- Made module text color wrap an entire Data Corruption span when applying color inside the effect.
+- Fixed generated figure class names so inserted figures consistently use `float-left` / `float-right`, `size-small` / `size-medium` / `size-large`, and `style-polaroid` / `style-screen`.
+- Updated Mothership system compatibility metadata to require 0.6.0 and mark 0.6.1 as verified.
 
 ## [1.0.2] - 2026-05-30
 
@@ -99,13 +121,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Description |
 |---------|------|-------------|
-| 1.0.3 | 2026-05-31 | Figure toolbar persistence, draft release notes, expanded documentation |
+| 1.1.0 | 2026-06-01 | ProseMirror-native toolbar, stable corrupted text, color/effect stacking, figure persistence |
 | 1.0.2 | 2026-05-30 | Foundry v14 compatibility, optional Monk's support, toolbar restoration |
 | 1.0.1 | 2026-05-21 | Foundry v13/v14 stabilization and Monk's Enhanced Journal compatibility |
 | 1.0.0 | 2026-01-03 | Initial public release |
 
-[Unreleased]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.3...HEAD
-[1.0.3]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.2...v1.0.3
+[Unreleased]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Kikimor-rec/mosh-journal-enhancer/releases/tag/v1.0.0

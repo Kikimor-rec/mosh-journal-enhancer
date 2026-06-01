@@ -1,82 +1,86 @@
-name: Release Module
+name: Release
 
 on:
   push:
     tags:
-      - 'v*'
+      - "v*.*.*"
+
+permissions:
+  contents: write
 
 jobs:
-  build:
+  release:
+    name: Build draft release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get version from tag
-        id: get_version
+      - name: Resolve tag version
+        id: version
+        shell: bash
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-          echo "Building version $VERSION"
-          echo "ZIP_NAME=mosh-journal-enhancer-v$VERSION.zip" >> $GITHUB_ENV
-          echo "RELEASE_DOWNLOAD_URL=https://github.com/${{ github.repository }}/releases/download/v$VERSION/mosh-journal-enhancer-v$VERSION.zip" >> $GITHUB_ENV
+          version="${GITHUB_REF_NAME#v}"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
 
-      - name: Update module.json version and download URL
+      - name: Validate manifest version
+        shell: bash
         run: |
-          sed -i 's/#{VERSION}#/${{ steps.get_version.outputs.VERSION }}/g' module.json
-          cat module.json
+          version="${{ steps.version.outputs.version }}"
+          VERSION="$version" node -e '
+            const fs = require("fs");
+            const manifest = JSON.parse(fs.readFileSync("module.json", "utf8"));
+            if (manifest.version !== process.env.VERSION) {
+              throw new Error(`module.json version ${manifest.version} does not match tag ${process.env.VERSION}`);
+            }
+            if (!manifest.download.includes(`/v${process.env.VERSION}/`)) {
+              throw new Error(`module.json download URL does not point at v${process.env.VERSION}`);
+            }
+          '
 
-      - name: Create release archive
+      - name: Build artifacts
+        shell: bash
         run: |
-          zip -r ${{ env.ZIP_NAME }} \
-            module.json \
-            README.md \
-            CHANGELOG.md \
-            LICENSE \
-            lang/ \
-            scripts/ \
-            styles/ \
-            templates/ \
-            docs/ \
+          version="${{ steps.version.outputs.version }}"
+          mkdir -p dist
+          cp module.json dist/module.json
+          zip -r "dist/mosh-journal-enhancer-v${version}.zip" \
+            module.json README.md CHANGELOG.md LICENSE \
+            scripts styles templates lang docs \
             -x "*.git*" \
             -x "*node_modules/*"
 
-      - name: Build release notes from changelog
+      - name: Generate release notes
+        shell: bash
         run: |
-          awk -v version="${{ steps.get_version.outputs.VERSION }}" '
-            $0 ~ "^## \\[" version "\\]" { in_section=1; next }
-            in_section && $0 ~ "^## \\[" { exit }
-            in_section { print }
+          version="${{ steps.version.outputs.version }}"
+          awk -v version="$version" '
+            $0 ~ "^## \\[" version "\\]" { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
           ' CHANGELOG.md > CHANGELOG_SECTION.md
 
           if [ ! -s CHANGELOG_SECTION.md ]; then
-            echo "No changelog section found for v${{ steps.get_version.outputs.VERSION }}." > CHANGELOG_SECTION.md
+            echo "No CHANGELOG.md section found for ${version}" >&2
+            exit 1
           fi
 
           {
             echo "## Changes"
-            echo
             cat CHANGELOG_SECTION.md
             echo
             echo "## Installation"
-            echo
-            echo "**Manifest URL:** \`https://github.com/${{ github.repository }}/releases/download/v${{ steps.get_version.outputs.VERSION }}/module.json\`"
-            echo
-            echo "Or use the latest manifest: \`https://github.com/${{ github.repository }}/releases/latest/download/module.json\`"
+            echo "- Manifest: https://github.com/Kikimor-rec/mosh-journal-enhancer/releases/latest/download/module.json"
+            echo "- Download: https://github.com/Kikimor-rec/mosh-journal-enhancer/releases/download/v${version}/mosh-journal-enhancer-v${version}.zip"
           } > RELEASE_NOTES.md
 
-      - name: Update Release with Files
+      - name: Create draft release
         uses: ncipollo/release-action@v1
         with:
-          allowUpdates: true
-          name: v${{ steps.get_version.outputs.VERSION }}
+          name: "MOSH Journal Enhancer v${{ steps.version.outputs.version }}"
           draft: true
           prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: './module.json, ./${{ env.ZIP_NAME }}'
-          tag: v${{ steps.get_version.outputs.VERSION }}
-          generateReleaseNotes: false
+          allowUpdates: true
           bodyFile: RELEASE_NOTES.md
+          artifacts: "dist/module.json,dist/mosh-journal-enhancer-v${{ steps.version.outputs.version }}.zip"

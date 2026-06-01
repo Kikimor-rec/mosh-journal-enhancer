@@ -4,7 +4,7 @@
  */
 
 export const MODULE_ID = "mosh-journal-enhancer";
-export const MODULE_VERSION = "1.0.3";
+export const MODULE_VERSION = "1.1.0";
 
 // Template paths
 export const TEMPLATES = {
@@ -66,7 +66,24 @@ export const BLOCK_TYPES = {
         hint: "MOSH.Blocks.FigureHint",
         className: "mosh-figure",
         isFigure: true
+    },
+    paper: {
+        label: "MOSH.Blocks.Paper",
+        icon: "fas fa-sticky-note",
+        hint: "MOSH.Blocks.PaperHint",
+        className: "paper-note"
     }
+};
+
+// Text Effects configuration
+export const TEXT_EFFECTS = {
+    none: { label: "MOSH.Effects.None", className: "" },
+    glitch: { label: "MOSH.Effects.Glitch", className: "mosh-fx-glitch" },
+    typewriter: { label: "MOSH.Effects.Typewriter", className: "mosh-fx-typewriter" },
+    corrupt: { label: "MOSH.Effects.Corrupt", className: "mosh-fx-corrupt" },
+    scramble: { label: "MOSH.Effects.Scramble", className: "mosh-fx-scramble" },
+    redacted: { label: "MOSH.Effects.Redacted", className: "mosh-fx-redacted" },
+    flicker: { label: "MOSH.Effects.Flicker", className: "mosh-fx-flicker" }
 };
 
 // Figure options

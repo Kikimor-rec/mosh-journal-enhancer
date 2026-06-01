@@ -1,0 +1,39 @@
+<div class="mosh-panel-container mosh-effect-panel-container journal-entry-content">
+    <div class="mosh-effect-controls">
+        <label class="mosh-panel-field-label" for="mosh-effect-select">{{i18n.selectEffect}}</label>
+        <select id="mosh-effect-select" class="mosh-effect-select">
+            {{#each effects}}
+            <option value="{{value}}" data-key="{{key}}">{{label}}</option>
+            {{/each}}
+        </select>
+
+        <label class="mosh-panel-field-label" for="mosh-effect-intensity">{{i18n.intensity}}</label>
+        <input id="mosh-effect-intensity" class="mosh-effect-intensity" type="range" min="1" max="3" step="0.25" value="2">
+        <div class="mosh-effect-intensity-labels">
+            <span>{{i18n.subtle}}</span>
+            <span>{{i18n.strong}}</span>
+        </div>
+    </div>
+
+    <div class="mosh-effect-preview-wrap">
+        <div class="mosh-panel-field-label">{{i18n.preview}}</div>
+        <p class="mosh-effect-preview-text">SYSTEM SIGNAL DEGRADED / crew log fragment</p>
+    </div>
+
+    <div class="mosh-redacted-color-section" hidden>
+        <div class="mosh-panel-field-label">{{i18n.redactedColor}}</div>
+        <div class="mosh-color-swatches mosh-redacted-color-swatches">
+            {{#each redactedPalette}}
+            <button class="mosh-color-swatch" type="button" data-color="{{color}}" title="{{label}}">
+                <span class="mosh-color-swatch-chip" style="background: {{color}};"></span>
+            </button>
+            {{/each}}
+        </div>
+    </div>
+
+    <div class="mosh-effect-actions">
+        <button class="mosh-inline-effect-btn" type="button">
+            <i class="fas fa-magic"></i> {{i18n.applyInline}}
+        </button>
+    </div>
+</div>

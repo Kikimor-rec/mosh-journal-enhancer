@@ -70,18 +70,18 @@
 /* Compatibility classes inserted by the toolbar and stored in journal HTML.
    These must live in manifest CSS so Monk's Enhanced Journal renders them
    even when only saved journal content is displayed. */
-.narrative-box,
-.terminal-block,
-.handout-block,
-.navigation-block,
-.warden-block,
-.info-block,
-.mosh-quote {
+.mosh-block.narrative, .narrative-box,
+.mosh-block.terminal, .terminal-block,
+.mosh-block.handout, .handout-block,
+.mosh-block.navigation, .navigation-block,
+.mosh-block.warden, .warden-block,
+.mosh-block.info, .info-block,
+.mosh-block.quote, .mosh-quote {
     position: relative;
     box-sizing: border-box;
 }
 
-.narrative-box {
+.mosh-block.narrative, .narrative-box {
     background: var(--mosh-hull);
     border-left: 6px solid var(--mosh-hazard);
     padding: 20px 24px 20px 28px;
@@ -93,7 +93,7 @@
     line-height: 1.6;
 }
 
-.narrative-box::before {
+.mosh-block.narrative::before, .narrative-box::before {
     content: "";
     position: absolute;
     left: 0;
@@ -103,7 +103,7 @@
     background: linear-gradient(180deg, var(--mosh-hazard) 0%, transparent 100%);
 }
 
-.mosh-quote {
+.mosh-block.quote, .mosh-quote {
     background: #0d0d0d;
     border: 2px solid #ff6b35;
     border-left: 6px solid #ff6b35;
@@ -114,7 +114,7 @@
     box-shadow: 0 0 20px rgba(255, 107, 53, 0.25), inset 0 0 30px rgba(255, 107, 53, 0.05);
 }
 
-.terminal-block {
+.mosh-block.terminal, .terminal-block {
     background: #000000;
     border: 3px solid var(--mosh-terminal-green);
     padding: 20px 24px;
@@ -125,7 +125,7 @@
     text-shadow: var(--mosh-terminal-glow);
 }
 
-.terminal-block::before {
+.mosh-block.terminal::before, .terminal-block::before {
     content: ">";
     position: absolute;
     left: 8px;
@@ -134,7 +134,7 @@
     animation: terminal-blink 1s infinite;
 }
 
-.handout-block {
+.mosh-block.handout, .handout-block {
     background: linear-gradient(0deg, transparent 0%, rgba(0, 0, 0, 0.02) 50%, transparent 100%), #f5e6d3;
     border: 1px solid #8b7355;
     border-top: 3px solid #8b7355;
@@ -145,7 +145,7 @@
     font-family: 'Special Elite', 'Courier New', serif;
 }
 
-.navigation-block {
+.mosh-block.navigation, .navigation-block {
     background: linear-gradient(90deg, var(--mosh-grate) 0%, var(--mosh-metal) 100%);
     border: 2px solid var(--mosh-hazard);
     border-left: 6px solid var(--mosh-hazard);
@@ -159,7 +159,7 @@
     font-size: 0.95em;
 }
 
-.warden-block {
+.mosh-block.warden, .warden-block {
     background: linear-gradient(135deg, #1a0f0f 0%, #2d1b1b 100%);
     border-left: 6px solid #ff4444;
     border-right: 2px solid rgba(255, 68, 68, 0.3);
@@ -171,7 +171,7 @@
     font-size: 0.95em;
 }
 
-.info-block {
+.mosh-block.info, .info-block {
     background: linear-gradient(135deg, #0f1a1a 0%, #1b2d2d 100%);
     border-left: 6px solid #44aaff;
     border-right: 2px solid rgba(68, 170, 255, 0.3);
@@ -196,373 +196,6 @@
 .mosh-block-header i {
     font-size: 1em;
     opacity: 0.8;
-}
-
-/* ============================================= */
-/* 2. NARRATIVE BLOCK                           */
-/* Read-aloud text for players                  */
-/* ============================================= */
-
-.mosh-block.narrative {
-    background: var(--mosh-hull);
-    border: none;
-    border-left: 3px solid var(--mosh-wire);
-    padding: 1.25em 1.5em 1.25em 1.75em;
-    font-size: 1.02em;
-    line-height: 1.7;
-    font-style: italic;
-    color: var(--mosh-text);
-}
-
-.mosh-block.narrative::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 3px;
-    height: 100%;
-    background: linear-gradient(180deg, var(--mosh-wire) 0%, var(--mosh-steel) 50%, var(--mosh-wire) 100%);
-}
-
-.mosh-block.narrative p { margin: 0.5em 0; }
-
-/* ============================================= */
-/* 3. QUOTE BLOCK                               */
-/* NPC dialogue, radio transmissions            */
-/* ============================================= */
-
-.mosh-block.quote {
-    background: transparent;
-    border: none;
-    border-left: 3px solid var(--mosh-steel);
-    padding: 0.75em 1em 0.75em 1.5em;
-    margin-left: 0.5em;
-    font-style: italic;
-    color: var(--mosh-text);
-}
-
-.mosh-block.quote p {
-    font-size: 1.02em;
-    line-height: 1.6;
-    margin: 0;
-}
-
-.mosh-block.quote cite {
-    display: block;
-    margin-top: 0.75em;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 0.8em;
-    color: var(--mosh-text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.mosh-block.quote cite::before { content: '— '; }
-
-/* Radio transmission variant */
-.mosh-block.quote.radio {
-    border-left-color: var(--mosh-tech);
-}
-
-.mosh-block.quote.radio::before {
-    content: '◉ REC';
-    position: absolute;
-    top: 0.5em;
-    right: 0.5em;
-    font-size: 0.65em;
-    color: var(--mosh-danger);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    animation: rec-blink 2s infinite;
-}
-
-@keyframes rec-blink {
-    0%, 70% { opacity: 1; }
-    71%, 100% { opacity: 0.3; }
-}
-
-/* ============================================= */
-/* 4. TERMINAL BLOCK                            */
-/* Ship computer, AI, system output             */
-/* ============================================= */
-
-.mosh-block.terminal {
-    background: #000000;
-    color: var(--mosh-terminal-green);
-    border: 1px solid #003300;
-    font-family: 'IBM Plex Mono', 'Roboto Mono', 'Courier New', monospace;
-    font-size: 0.88em;
-    line-height: 1.6;
-    padding: 1.25em 1.5em;
-    text-shadow: var(--mosh-terminal-glow);
-    overflow: hidden;
-}
-
-.mosh-block.terminal .mosh-block-header {
-    color: var(--mosh-terminal-green);
-    font-family: inherit;
-    letter-spacing: 0.15em;
-    border-bottom: 1px solid #003300;
-    padding-bottom: 0.75em;
-    margin-bottom: 1em;
-    text-shadow: var(--mosh-terminal-glow);
-}
-
-/* Cursor blink */
-.mosh-block.terminal p:last-of-type::after {
-    content: '█';
-    animation: cursor-blink 1s step-end infinite;
-    margin-left: 2px;
-}
-
-@keyframes cursor-blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-}
-
-/* CRT scanlines */
-.mosh-block.terminal::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(0deg, transparent 0px, transparent 1px, rgba(0,0,0,0.12) 1px, rgba(0,0,0,0.12) 2px);
-    pointer-events: none;
-}
-
-/* Vignette */
-.mosh-block.terminal::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.25) 100%);
-    pointer-events: none;
-}
-
-/* Keep terminal dark in light theme */
-.theme-light .mosh-block.terminal {
-    background: #000000;
-    color: var(--mosh-terminal-green);
-}
-
-/* Amber variant */
-.mosh-block.terminal.amber {
-    color: var(--mosh-terminal-amber);
-    border-color: #332200;
-}
-
-/* Error variant */
-.mosh-block.terminal.error {
-    color: #ff4444;
-    border-color: #330000;
-}
-
-/* ============================================= */
-/* 5. HANDOUT BLOCK                             */
-/* Notes, documents, letters, data logs         */
-/* ============================================= */
-
-.mosh-block.handout {
-    background: var(--mosh-grate);
-    border: 1px solid var(--mosh-steel);
-    padding: 1.25em;
-    font-family: 'Courier New', monospace;
-    font-size: 0.92em;
-    line-height: 1.6;
-}
-
-.mosh-block.handout .mosh-block-header {
-    font-family: 'Oswald', sans-serif;
-    color: var(--mosh-text-dim);
-    border-bottom: 1px dashed var(--mosh-steel);
-    padding-bottom: 0.5em;
-    margin-bottom: 1em;
-}
-
-/* Paper texture effect */
-.mosh-block.handout::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    opacity: 0.03;
-    pointer-events: none;
-}
-
-/* Torn edge effect */
-.mosh-block.handout.torn {
-    clip-path: polygon(
-        0% 2%, 3% 0%, 7% 1%, 12% 0%, 18% 2%, 23% 0%, 28% 1%, 
-        35% 0%, 42% 2%, 48% 0%, 55% 1%, 62% 0%, 68% 2%, 75% 0%, 
-        82% 1%, 88% 0%, 95% 2%, 100% 0%, 100% 98%, 97% 100%, 
-        92% 99%, 87% 100%, 80% 98%, 73% 100%, 67% 99%, 60% 100%, 
-        52% 98%, 45% 100%, 38% 99%, 30% 100%, 22% 98%, 15% 100%, 
-        8% 99%, 2% 100%, 0% 98%
-    );
-}
-
-/* Classified stamp */
-.mosh-block.handout.classified::after {
-    content: 'CLASSIFIED';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-15deg);
-    font-family: 'Oswald', Impact, sans-serif;
-    font-size: 2.5em;
-    font-weight: 700;
-    color: rgba(200, 0, 0, 0.15);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    pointer-events: none;
-    white-space: nowrap;
-}
-
-/* ============================================= */
-/* 6. NAVIGATION BLOCK                          */
-/* Links to connected locations/rooms           */
-/* ============================================= */
-
-.mosh-block.navigation {
-    background: var(--mosh-hull);
-    border: 2px solid var(--mosh-steel);
-    padding: 0;
-    overflow: hidden;
-}
-
-.mosh-block.navigation .mosh-block-header {
-    background: var(--mosh-metal);
-    color: var(--mosh-text-bright);
-    margin: 0;
-    padding: 0.6em 1em;
-    border-bottom: 2px solid var(--mosh-steel);
-    font-size: 0.8em;
-}
-
-.mosh-block.navigation .mosh-block-header i {
-    color: var(--mosh-tech);
-}
-
-.mosh-block.navigation ul,
-.mosh-block.navigation .nav-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.mosh-block.navigation li,
-.mosh-block.navigation .nav-item {
-    padding: 0.6em 1em;
-    border-bottom: 1px solid var(--mosh-metal);
-    display: flex;
-    align-items: center;
-    gap: 0.75em;
-    transition: background 0.15s ease;
-}
-
-.mosh-block.navigation li:last-child,
-.mosh-block.navigation .nav-item:last-child {
-    border-bottom: none;
-}
-
-.mosh-block.navigation li:hover,
-.mosh-block.navigation .nav-item:hover {
-    background: var(--mosh-grate);
-}
-
-.mosh-block.navigation li::before {
-    content: '▸';
-    color: var(--mosh-tech);
-    font-size: 0.8em;
-}
-
-.mosh-block.navigation a {
-    color: var(--mosh-tech);
-    text-decoration: none;
-    border-bottom: 1px dotted var(--mosh-tech);
-}
-
-.mosh-block.navigation a:hover {
-    color: var(--mosh-text-bright);
-    border-bottom-style: solid;
-}
-
-/* Direction indicators */
-.mosh-block.navigation .direction {
-    font-size: 0.75em;
-    color: var(--mosh-text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-left: auto;
-}
-
-/* ============================================= */
-/* 7. WARDEN BLOCK                              */
-/* GM tips, advice, hidden information          */
-/* ============================================= */
-
-.mosh-block.warden {
-    background: linear-gradient(135deg, var(--mosh-grate) 0%, var(--mosh-panel) 100%);
-    border: 1px solid var(--mosh-steel);
-    border-left: 4px solid var(--mosh-bio);
-}
-
-.mosh-block.warden .mosh-block-header {
-    color: var(--mosh-bio);
-    font-size: 0.8em;
-}
-
-.mosh-block.warden .mosh-block-header i {
-    color: var(--mosh-bio);
-}
-
-/* Dot grid pattern */
-.mosh-block.warden::after {
-    content: '';
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    width: 24px;
-    height: 24px;
-    background-image: radial-gradient(var(--mosh-bio) 1px, transparent 1px);
-    background-size: 5px 5px;
-    opacity: 0.35;
-    pointer-events: none;
-}
-
-/* ============================================= */
-/* 8. INFO BLOCK                                */
-/* Rules, mechanics, important information      */
-/* ============================================= */
-
-.mosh-block.info {
-    background: var(--mosh-panel);
-    border: 1px solid var(--mosh-steel);
-    border-top: 3px solid var(--mosh-hazard);
-}
-
-.mosh-block.info .mosh-block-header {
-    color: var(--mosh-hazard);
-    border-bottom: 1px solid var(--mosh-metal);
-    padding-bottom: 0.6em;
-    margin-bottom: 1em;
-}
-
-.mosh-block.info .mosh-block-header i {
-    color: var(--mosh-hazard);
-}
-
-/* Hazard stripes corner */
-.mosh-block.info::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 32px;
-    height: 32px;
-    background: repeating-linear-gradient(-45deg, var(--mosh-hazard) 0px, var(--mosh-hazard) 3px, var(--mosh-void) 3px, var(--mosh-void) 6px);
-    clip-path: polygon(100% 0, 0 0, 100% 100%);
-    opacity: 0.5;
 }
 
 /* ============================================= */
@@ -796,3 +429,997 @@
         margin: 1em auto;
     }
 }
+
+/* ============================================= */
+/* 13. FONTS                                    */
+/* ============================================= */
+@font-face {
+    font-family: 'Caveat';
+    src: url('fonts/Caveat-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Caveat';
+    src: url('fonts/Caveat-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* ============================================= */
+/* 14. PAPER NOTE BLOCK                         */
+/* ============================================= */
+.mosh-block.paper {
+    position: relative;
+    background: #f4edd3;
+    color: #2c281e;
+    padding: 1.5em 1.5em 2em;
+    margin: 1.5em 0;
+    font-family: 'Caveat', cursive;
+    font-size: 1.4em;
+    line-height: 1.3;
+    border: 1px solid #dcd4b8;
+    box-shadow: 2px 4px 10px rgba(0,0,0,0.15);
+    transform: rotate(-1deg);
+    transition: transform 0.2s ease;
+}
+
+.mosh-block.paper:hover {
+    transform: rotate(0deg);
+}
+
+.mosh-block.paper.lined {
+    background-image: linear-gradient(transparent 95%, #b4cccd 95%);
+    background-size: 100% 1.5em;
+    background-position: 0 0.2em;
+}
+
+.mosh-block.paper.aged {
+    background: linear-gradient(135deg, #e6d3a8 0%, #c4aa7d 100%);
+    box-shadow: inset 0 0 40px rgba(100,60,20,0.2), 2px 4px 10px rgba(0,0,0,0.2);
+    border: 1px solid #a38c62;
+}
+
+.mosh-block.paper.stained::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: radial-gradient(circle at 80% 20%, rgba(90, 50, 20, 0.15) 0%, transparent 15%),
+                      radial-gradient(ellipse at 10% 80%, rgba(70, 40, 10, 0.1) 0%, transparent 20%);
+    pointer-events: none;
+}
+
+.mosh-block.paper.pinned::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #f44336, #b71c1c);
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.4), inset -1px -2px 3px rgba(0,0,0,0.2);
+    z-index: 2;
+}
+
+/* Make it work with inline styles inserted by JS (panel class) */
+.paper-note {
+    position: relative;
+    background: #f4edd3;
+    color: #2c281e;
+    padding: 1.5em 1.5em 2em;
+    margin: 1.5em 0;
+    font-family: 'Caveat', cursive;
+    font-size: 1.4em;
+    line-height: 1.3;
+    border: 1px solid #dcd4b8;
+    box-shadow: 2px 4px 10px rgba(0,0,0,0.15);
+    transform: rotate(-1deg);
+    box-sizing: border-box;
+}
+
+.paper-note.lined {
+    background-image: linear-gradient(transparent 95%, #b4cccd 95%);
+    background-size: 100% 1.5em;
+    background-position: 0 0.2em;
+}
+
+.paper-note.aged {
+    background: linear-gradient(135deg, #e6d3a8 0%, #c4aa7d 100%);
+    box-shadow: inset 0 0 40px rgba(100,60,20,0.2), 2px 4px 10px rgba(0,0,0,0.2);
+    border-color: #a38c62;
+}
+
+.paper-note.stained::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: radial-gradient(circle at 80% 20%, rgba(90, 50, 20, 0.15) 0%, transparent 15%);
+    pointer-events: none;
+}
+
+.paper-note.pinned::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #f44336, #b71c1c);
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.4);
+}
+
+/* ============================================= */
+/* 15. TEXT EFFECTS                             */
+/* ============================================= */
+
+/* Glitch Effect */
+.mosh-fx-glitch {
+    position: relative;
+    display: inline-block;
+    animation: mosh-glitch-anim calc(4s / var(--mosh-fx-intensity, 2)) infinite linear alternate-reverse;
+}
+
+@keyframes mosh-glitch-anim {
+    0% { transform: translate(0) }
+    20% { transform: translate(calc(-1px * var(--mosh-fx-intensity, 2)), 1px) }
+    40% { transform: translate(-1px, calc(-1px * var(--mosh-fx-intensity, 2))) }
+    60% { transform: translate(calc(1px * var(--mosh-fx-intensity, 2)), 1px) }
+    80% { transform: translate(1px, calc(-1px * var(--mosh-fx-intensity, 2))) }
+    100% { transform: translate(0) }
+}
+
+/* Typewriter Effect */
+.mosh-fx-typewriter {
+    display: inline-flex;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid currentColor;
+    animation: mosh-typing calc(var(--mosh-char-count, 20) * (0.16s / var(--mosh-fx-intensity, 2))) steps(var(--mosh-char-count, 20), end),
+               mosh-blink-caret .75s step-end infinite;
+    max-width: fit-content;
+}
+
+@keyframes mosh-typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes mosh-blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: currentColor; }
+}
+
+/* Data Corruption */
+.mosh-fx-corrupt {
+    position: relative;
+    display: inline-grid;
+    isolation: isolate;
+    padding: 0 0.12em;
+    border-radius: 2px;
+    text-decoration: underline wavy rgba(255, 36, 36, 0.75);
+    text-shadow:
+        calc(0.4px * var(--mosh-fx-intensity, 2)) 0 #ff2020,
+        calc(-0.4px * var(--mosh-fx-intensity, 2)) 0 #00eaff;
+    animation: mosh-corrupt-base calc(1.4s / var(--mosh-fx-intensity, 2)) infinite steps(2);
+}
+
+.mosh-fx-corrupt-active {
+    color: inherit;
+    text-shadow: none !important;
+    text-decoration-color: transparent !important;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.mosh-fx-corrupt .mosh-fx-source,
+.mosh-fx-corrupt .mosh-fx-frame {
+    grid-area: 1 / 1;
+    min-width: 0;
+}
+
+.mosh-fx-corrupt .mosh-fx-frame {
+    display: none;
+    pointer-events: none;
+    font: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    color: currentColor;
+    text-decoration: underline wavy currentColor;
+    text-shadow:
+        calc(0.7px * var(--mosh-fx-intensity, 2)) 0 currentColor,
+        calc(-0.5px * var(--mosh-fx-intensity, 2)) 0 color-mix(in srgb, var(--mosh-corrupt-accent, currentColor) 55%, #00f6ff);
+    white-space: pre;
+    animation: mosh-corrupt-front calc(0.9s / var(--mosh-fx-intensity, 2)) infinite steps(2);
+}
+
+.mosh-fx-corrupt-active .mosh-fx-source {
+    visibility: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.mosh-fx-corrupt-active .mosh-fx-frame {
+    display: inline;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.ProseMirror[contenteditable="true"] .mosh-fx-corrupt,
+[contenteditable="true"] .mosh-fx-corrupt-editor {
+    display: inline;
+    color: inherit;
+    -webkit-text-fill-color: currentColor;
+    background: rgba(255, 70, 95, 0.08);
+    outline: 1px dashed rgba(255, 70, 95, 0.72);
+    text-shadow: inherit;
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: rgba(255, 70, 95, 0.82);
+}
+
+.ProseMirror[contenteditable="true"] .mosh-fx-corrupt .mosh-fx-source,
+[contenteditable="true"] .mosh-fx-corrupt-editor .mosh-fx-source {
+    visibility: visible;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+.ProseMirror[contenteditable="true"] .mosh-fx-corrupt .mosh-fx-frame,
+[contenteditable="true"] .mosh-fx-corrupt-editor .mosh-fx-frame {
+    display: none !important;
+}
+
+@keyframes mosh-corrupt-base {
+    0%, 82%, 100% { transform: translate(0); filter: none; }
+    84% { transform: translateX(calc(0.8px * var(--mosh-fx-intensity, 2))); filter: contrast(1.8); }
+    86% { transform: translateX(calc(-0.8px * var(--mosh-fx-intensity, 2))); filter: saturate(1.7); }
+}
+
+@keyframes mosh-corrupt-front {
+    0%, 100% { transform: translate(0, 0); filter: none; }
+    30% { transform: translateX(calc(-0.4px * var(--mosh-fx-intensity, 2))); filter: contrast(1.35); }
+    60% { transform: translateX(calc(0.5px * var(--mosh-fx-intensity, 2))); filter: saturate(1.5); }
+    82% { transform: translateY(calc(-0.3px * var(--mosh-fx-intensity, 2))); }
+}
+
+@keyframes mosh-corrupt-cyan {
+    0%, 100% { clip-path: inset(74% 0 0 0); }
+    25% { clip-path: inset(4% 0 82% 0); }
+    50% { clip-path: inset(36% 0 42% 0); }
+    75% { clip-path: inset(58% 0 18% 0); }
+}
+
+/* Scramble */
+.mosh-fx-scramble {
+    display: inline-block;
+    animation: mosh-scramble-anim calc(0.45s / var(--mosh-fx-intensity, 2)) infinite;
+}
+
+@keyframes mosh-scramble-anim {
+    0% { opacity: 1; transform: skewX(0deg); }
+    25% { opacity: 0.8; transform: skewX(10deg); }
+    50% { opacity: 1; transform: skewX(0deg); }
+    75% { opacity: 0.9; transform: skewX(-5deg); }
+    100% { opacity: 1; transform: skewX(0deg); }
+}
+
+/* Redacted */
+.mosh-fx-redacted {
+    background-color: var(--mosh-redacted-color, #111);
+    color: var(--mosh-redacted-color, #111);
+    user-select: none;
+    -webkit-user-select: none;
+    padding: 0 4px;
+}
+
+.theme-light .mosh-fx-redacted {
+    background-color: var(--mosh-redacted-color, #111);
+    color: var(--mosh-redacted-color, #111);
+}
+
+/* Flicker */
+.mosh-fx-flicker {
+    animation: mosh-flicker-anim calc(6s / var(--mosh-fx-intensity, 2)) infinite;
+}
+
+@keyframes mosh-flicker-anim {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+    51% { opacity: 1; }
+    52% { opacity: 0; }
+    53% { opacity: 1; }
+    60% { opacity: 0.8; }
+    61% { opacity: 1; }
+}
+
+/* ============================================= */
+/* 16. TOOL PANELS                              */
+/* ============================================= */
+
+.mosh-block-panel .window-content,
+.mosh-effect-panel .window-content {
+    padding: 0;
+    overflow: hidden;
+}
+
+.mosh-color-panel .window-content {
+    padding: 0;
+    overflow: hidden;
+}
+
+.mosh-panel-container {
+    background: rgba(5, 5, 10, 0.94);
+    color: var(--color-text-primary, #eee);
+}
+
+.mosh-block-panel-container {
+    max-height: min(62vh, 560px);
+    overflow-y: auto;
+    padding: 12px;
+}
+
+.mosh-panel-field-label {
+    grid-column: 1 / -1;
+    font-weight: 700;
+    color: #f2e2bd;
+}
+
+.mosh-blocks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+}
+
+.mosh-panel-item {
+    border: 1px solid rgba(242, 234, 121, 0.22);
+    background: rgba(12, 12, 16, 0.92);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+
+.mosh-panel-item:hover {
+    border-color: #f2ea79;
+    background: rgba(30, 30, 36, 0.96);
+    transform: translateY(-1px);
+}
+
+.mosh-panel-label {
+    color: #f2e2bd;
+    font-size: 12px;
+    margin-bottom: 6px;
+    font-weight: 700;
+}
+
+.mosh-panel-preview {
+    pointer-events: none;
+    max-height: 86px;
+    overflow: hidden;
+}
+
+.mosh-panel-preview > div,
+.mosh-panel-preview > blockquote {
+    margin: 0 !important;
+    padding: 8px !important;
+    font-size: 12px !important;
+}
+
+.mosh-panel-preview p {
+    margin: 0 !important;
+}
+
+.mosh-paper-style-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(242, 234, 121, 0.18);
+}
+
+.mosh-paper-style-btn {
+    flex: 1 1 auto;
+    min-width: 64px;
+    min-height: 24px;
+    padding: 3px 7px;
+    border: 1px solid rgba(242, 234, 121, 0.28);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #f2e2bd;
+    font-size: 11px;
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+.mosh-paper-style-btn:hover {
+    border-color: #f2ea79;
+    background: rgba(242, 234, 121, 0.14);
+}
+
+.mosh-effect-panel-container {
+    padding: 14px;
+    display: grid;
+    gap: 14px;
+}
+
+.mosh-color-panel-container {
+    padding: 14px;
+    display: grid;
+    gap: 14px;
+}
+
+.mosh-effect-controls {
+    display: grid;
+    gap: 8px;
+}
+
+.mosh-effect-select,
+.mosh-effect-intensity {
+    width: 100%;
+}
+
+.mosh-effect-intensity-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--color-text-secondary, #aaa);
+    margin-top: -4px;
+}
+
+.mosh-effect-preview-wrap {
+    border: 1px solid rgba(242, 234, 121, 0.22);
+    background: rgba(0, 0, 0, 0.28);
+    padding: 12px;
+}
+
+.mosh-effect-preview-text {
+    min-height: 34px;
+    margin: 8px 0 0;
+    color: #f4f1dc;
+}
+
+.mosh-effect-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.mosh-inline-effect-btn,
+.mosh-inline-color-btn {
+    min-height: 32px;
+}
+
+.mosh-text-color {
+    text-decoration-color: currentColor;
+}
+
+.mosh-color-swatches {
+    display: grid;
+    grid-template-columns: repeat(6, 32px);
+    gap: 8px;
+    justify-content: center;
+}
+
+.mosh-color-swatch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid rgba(242, 234, 121, 0.22);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-primary, #eee);
+    cursor: pointer;
+    text-align: left;
+}
+
+.mosh-color-swatch:hover {
+    border-color: #f2ea79;
+    background: rgba(242, 234, 121, 0.12);
+}
+
+.mosh-color-swatch-chip {
+    width: 22px;
+    height: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    border-radius: 50%;
+    flex: 0 0 auto;
+}
+
+
+/* ============================================= */
+/* 13. DIALOG STYLES                            */
+/* ============================================= */
+
+/* Dialog Base Styles - ApplicationV2 */
+        .mosh-dialog {
+            background: var(--color-bg-option, #1a1a1a);
+        }
+        
+        .mosh-dialog .window-content,
+        .mosh-block-formatter .window-content {
+            background: transparent;
+            padding: 12px;
+        }
+        
+        .mosh-block-formatter .mosh-formatter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        
+        /* Tab Navigation */
+        .mosh-block-formatter .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid var(--color-border-light, #444);
+            padding-bottom: 0;
+        }
+        
+        .mosh-block-formatter .tabs .item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            color: var(--color-text-primary, #ccc);
+            cursor: pointer;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.2s;
+            text-decoration: none;
+            border: 1px solid var(--color-border-light, #444);
+            border-bottom: none;
+            margin-bottom: -2px;
+            background: var(--color-bg-btn, #2a2a2a);
+        }
+        
+        .mosh-block-formatter .tabs .item:hover {
+            color: #fff;
+            background: var(--color-bg-btn-hover, #3a3a3a);
+        }
+        
+        .mosh-block-formatter .tabs .item.active {
+            color: var(--color-shadow-primary, #ff6b35);
+            background: var(--color-bg-option, #1a1a1a);
+            border-color: var(--color-border-light, #444);
+            border-bottom-color: var(--color-bg-option, #1a1a1a);
+        }
+        
+        .mosh-block-formatter .tabs .item i {
+            font-size: 14px;
+        }
+        
+        /* Tab Content */
+        .mosh-block-formatter .tab-content > .tab {
+            display: none;
+        }
+        
+        .mosh-block-formatter .tab-content > .tab.active {
+            display: block;
+        }
+        
+        /* Selection Info */
+        .mosh-formatter-form .selection-info {
+            margin-bottom: 16px;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .mosh-formatter-form .selection-info.has-selection {
+            background: rgba(46, 204, 113, 0.15);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+        }
+        
+        .mosh-formatter-form .selection-info.no-selection {
+            background: rgba(255, 193, 7, 0.15);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+        }
+        
+        .mosh-formatter-form .selection-info i {
+            flex-shrink: 0;
+        }
+        
+        /* Preview Section */
+        .mosh-formatter-form .preview-section {
+            margin: 16px 0;
+        }
+        
+        .mosh-formatter-form .preview-section > label {
+            display: block;
+            font-size: 12px;
+            color: var(--color-text-secondary, #999);
+            margin-bottom: 8px;
+        }
+        
+        .mosh-formatter-form .preview-section > label i {
+            margin-right: 4px;
+        }
+        
+        .mosh-formatter-form .block-preview-content,
+        .mosh-formatter-form .figure-result-preview {
+            padding: 12px;
+            border: 1px solid var(--color-border-light, #444);
+            border-radius: 6px;
+            background: var(--color-bg-input, #111);
+            min-height: 80px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .mosh-formatter-form .preview-placeholder {
+            color: var(--color-text-secondary, #666);
+            font-style: italic;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        /* Figure Options */
+        .mosh-formatter-form .figure-options {
+            margin: 16px 0;
+        }
+        
+        .mosh-formatter-form .figure-option-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .mosh-formatter-form .figure-preview {
+            width: 100%;
+            height: 150px;
+            border: 2px dashed var(--color-border-light, #444);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: var(--color-bg-input, #1a1a1a);
+            cursor: pointer;
+            transition: border-color 0.2s;
+            margin-bottom: 12px;
+        }
+        
+        .mosh-formatter-form .figure-preview:hover {
+            border-color: var(--color-shadow-primary, #ff6b35);
+        }
+        
+        .mosh-formatter-form .figure-preview-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .mosh-formatter-form .figure-preview-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--color-text-secondary, #666);
+        }
+        
+        .mosh-formatter-form .figure-preview-placeholder i {
+            font-size: 32px;
+        }
+        
+        .mosh-formatter-form .figure-preview-placeholder small {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+        
+        .mosh-block-formatter .hint,
+        .mosh-formatter-dialog .hint {
+            font-size: 12px;
+            color: var(--color-text-secondary, #999);
+            margin-bottom: 12px;
+        }
+        
+        .mosh-block-formatter .block-grid,
+        .mosh-formatter-dialog .block-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .mosh-block-formatter .block-btn,
+        .mosh-formatter-dialog .block-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border: 1px solid var(--color-border-light, #444);
+            border-radius: 4px;
+            background: var(--color-bg-btn, #2a2a2a);
+            color: var(--color-text-primary, #ddd);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .mosh-block-formatter .block-btn:hover,
+        .mosh-formatter-dialog .block-btn:hover {
+            background: var(--color-bg-btn-hover, #3a3a3a);
+            border-color: var(--color-border-highlight, #666);
+        }
+        
+        .mosh-block-formatter .block-btn.selected,
+        .mosh-formatter-dialog .block-btn.selected {
+            background: var(--color-bg-option-hover, #444);
+            border-color: var(--color-shadow-primary, #ff6b35);
+            box-shadow: 0 0 8px rgba(255, 107, 53, 0.3);
+        }
+        
+        .mosh-block-formatter .block-btn i,
+        .mosh-formatter-dialog .block-btn i {
+            font-size: 14px;
+            width: 18px;
+            text-align: center;
+        }
+        
+        .mosh-block-formatter .modifier-section,
+        .mosh-block-formatter .title-section,
+        .mosh-formatter-dialog .modifier-section,
+        .mosh-formatter-dialog .title-section {
+            margin-bottom: 12px;
+        }
+        
+        .mosh-block-formatter label,
+        .mosh-formatter-dialog label {
+            display: block;
+            font-size: 12px;
+            color: var(--color-text-secondary, #999);
+            margin-bottom: 4px;
+        }
+        
+        .mosh-block-formatter select,
+        .mosh-block-formatter input[type="text"],
+        .mosh-formatter-dialog select,
+        .mosh-formatter-dialog input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--color-border-light, #444);
+            border-radius: 4px;
+            background: var(--color-bg-input, #1a1a1a);
+            color: var(--color-text-primary, #ddd);
+        }
+        
+        .mosh-block-formatter .action-section,
+        .mosh-formatter-dialog .action-section {
+            margin-top: 16px;
+        }
+        
+        .mosh-block-formatter .insert-btn,
+        .mosh-formatter-dialog .insert-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            background: var(--color-shadow-primary, #ff6b35);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .mosh-block-formatter .insert-btn:hover,
+        .mosh-formatter-dialog .insert-btn:hover {
+            background: #ff8555;
+            transform: translateY(-1px);
+        }
+        
+        /* Insert Block/Figure Buttons */
+        .mosh-block-formatter .insert-block-btn,
+        .mosh-block-formatter .insert-figure-btn,
+        .mosh-formatter-form .insert-block-btn,
+        .mosh-formatter-form .insert-figure-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            background: var(--color-shadow-primary, #ff6b35);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .mosh-block-formatter .insert-block-btn:hover,
+        .mosh-block-formatter .insert-figure-btn:hover,
+        .mosh-formatter-form .insert-block-btn:hover,
+        .mosh-formatter-form .insert-figure-btn:hover {
+            background: #ff8555;
+            transform: translateY(-1px);
+        }
+        
+        .mosh-formatter-form .insert-block-btn:disabled,
+        .mosh-formatter-form .insert-figure-btn:disabled {
+            background: var(--color-bg-btn, #2a2a2a);
+            color: var(--color-text-secondary, #666);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Figure Picker Dialog */
+        .mosh-figure-picker {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .mosh-figure-picker .figure-preview {
+            width: 100%;
+            height: 150px;
+            border: 2px dashed var(--color-border-light, #444);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: var(--color-bg-input, #1a1a1a);
+        }
+        
+        .mosh-figure-picker .preview-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .mosh-figure-picker .preview-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--color-text-secondary, #666);
+        }
+        
+        .mosh-figure-picker .preview-placeholder i {
+            font-size: 32px;
+        }
+        
+        .mosh-figure-picker .figure-path-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .mosh-figure-picker .figure-image-path {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--color-border-light, #444);
+            border-radius: 4px;
+            background: var(--color-bg-input, #1a1a1a);
+            color: var(--color-text-primary, #ddd);
+        }
+        
+        .mosh-figure-picker .figure-browse-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--color-border-light, #444);
+            border-radius: 4px;
+            background: var(--color-bg-btn, #2a2a2a);
+            color: var(--color-text-primary, #ddd);
+            cursor: pointer;
+        }
+        
+        .mosh-figure-picker .figure-browse-btn:hover {
+            background: var(--color-bg-btn-hover, #3a3a3a);
+        }
+        
+        .mosh-figure-picker .figure-option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .mosh-figure-picker .figure-option-group label {
+            font-size: 12px;
+            color: var(--color-text-secondary, #999);
+        }
+        
+        .mosh-figure-picker .figure-option-group select,
+        .mosh-figure-picker .figure-option-group input {
+            padding: 8px;
+            border: 1px solid var(--color-border-light, #444);
+            border-radius: 4px;
+            background: var(--color-bg-input, #1a1a1a);
+            color: var(--color-text-primary, #ddd);
+        }
+        
+        /* New formatter form figure controls */
+        .mosh-formatter-form .figure-path-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .mosh-formatter-form .figure-image-path {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--color-border-light, #444);
+            border-radius: 4px;
+            background: var(--color-bg-input, #1a1a1a);
+            color: var(--color-text-primary, #ddd);
+        }
+        
+        .mosh-formatter-form .figure-browse-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--color-border-light, #444);
+            border-radius: 4px;
+            background: var(--color-bg-btn, #2a2a2a);
+            color: var(--color-text-primary, #ddd);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .mosh-formatter-form .figure-browse-btn:hover {
+            background: var(--color-bg-btn-hover, #3a3a3a);
+            border-color: var(--color-shadow-primary, #ff6b35);
+        }
+        
+        .mosh-formatter-form .figure-option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .mosh-formatter-form .figure-option-group label {
+            font-size: 12px;
+            color: var(--color-text-secondary, #999);
+        }
+        
+        .mosh-formatter-form .figure-option-group select,
+        .mosh-formatter-form .figure-option-group input {
+            padding: 8px;
+            border: 1px solid var(--color-border-light, #444);
+            border-radius: 4px;
+            background: var(--color-bg-input, #1a1a1a);
+            color: var(--color-text-primary, #ddd);
+        }
+
+        /* Light theme support */
+        body.theme-light .mosh-dialog {
+            background: var(--color-bg-option, #f0f0f0);
+        }
+        
+        body.theme-light .mosh-formatter-dialog .block-btn {
+            background: var(--color-bg-btn, #fff);
+            border-color: var(--color-border-light, #ccc);
+            color: var(--color-text-primary, #333);
+        }
+        
+        body.theme-light .mosh-figure-picker .figure-preview {
+            background: var(--color-bg-input, #fff);
+            border-color: var(--color-border-light, #ccc);
+        }
+        
+        body.theme-light .mosh-formatter-form .block-preview-content,
+        body.theme-light .mosh-formatter-form .figure-result-preview {
+            background: var(--color-bg-input, #f5f5f5);
+            border-color: var(--color-border-light, #ccc);
+        }
+        
+        body.theme-light .mosh-formatter-form .figure-preview {
+            background: var(--color-bg-input, #f5f5f5);
+            border-color: var(--color-border-light, #ccc);
+        }
+        
+        body.theme-light .mosh-block-formatter .tabs .item.active {
+            background: var(--color-bg-option, #f0f0f0);
+            border-bottom-color: var(--color-bg-option, #f0f0f0);
+        }
+        
+        

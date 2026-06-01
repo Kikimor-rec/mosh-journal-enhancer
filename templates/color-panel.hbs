@@ -1,0 +1,9 @@
+<div class="mosh-panel-container mosh-color-panel-container journal-entry-content">
+    <div class="mosh-color-swatches mosh-color-swatches-only" aria-label="{{i18n.themeColors}}">
+        {{#each palette}}
+        <button class="mosh-color-swatch" type="button" data-color="{{color}}" title="{{label}}">
+            <span class="mosh-color-swatch-chip" style="background: {{color}};"></span>
+        </button>
+        {{/each}}
+    </div>
+</div>

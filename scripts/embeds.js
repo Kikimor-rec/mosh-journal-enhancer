@@ -5,6 +5,7 @@
 
 import { MODULE_ID, TEMPLATES } from "./config.js";
 import { log, logError } from "./utils.js";
+import { normalizeActorSystem, normalizeItemSystem } from "./system-adapter.js";
 
 const PATCH_MARKER = Symbol.for(`${MODULE_ID}.embedOverridesRegistered`);
 const HANDLER_MARKER = Symbol.for(`${MODULE_ID}.embedHandlersRegistered`);
@@ -183,6 +184,7 @@ async function renderActorEmbed(actor, config = {}, options = {}) {
     const isCreature = actor.type === "creature";
     const isShip = actor.type === "ship";
     const isCharacter = actor.type === "character" || actor.type === "android";
+    const system = normalizeActorSystem(actor);
 
     let viewMode = getRequestedViewMode(config, options);
     if (!viewMode) {
@@ -202,7 +204,7 @@ async function renderActorEmbed(actor, config = {}, options = {}) {
 
     const context = {
         actor,
-        system: actor.system,
+        system,
         config: { ...config, viewMode, showRolls, compact, showBio },
         label,
         enrichedLink,
@@ -210,15 +212,15 @@ async function renderActorEmbed(actor, config = {}, options = {}) {
         isCreature,
         isShip,
         isCharacter,
-        isFirstEdition: actor.system.settings?.firstEdition || false,
+        isFirstEdition: system.settings?.firstEdition || false,
         items: actor.items,
-        enrichedBiography: showBio ? await TextEditorImpl.enrichHTML(actor.system.biography || "", {
+        enrichedBiography: showBio ? await TextEditorImpl.enrichHTML(system.biography || "", {
             secrets: actor.isOwner,
             rollData: actor.getRollData?.() || {},
             relativeTo: actor
         }) : "",
         enrichedDescription: showBio ? await TextEditorImpl.enrichHTML(
-            actor.system.description || (actor.system.desc && actor.system.desc.value) || "",
+            system.description || (system.desc && system.desc.value) || "",
             {
                 secrets: actor.isOwner,
                 rollData: actor.getRollData?.() || {},
@@ -237,6 +239,7 @@ async function renderActorEmbed(actor, config = {}, options = {}) {
 async function renderItemEmbed(item, config = {}, options = {}) {
     const label = config.label || options.label || item.name;
     const TextEditorImpl = getTextEditorImplementation();
+    const system = normalizeItemSystem(item);
     const enrichedLink = await TextEditorImpl.enrichHTML(`@UUID[${item.uuid}]{${label}}`, {
         async: true,
         relativeTo: item
@@ -244,11 +247,11 @@ async function renderItemEmbed(item, config = {}, options = {}) {
 
     return renderTemplateToElement(TEMPLATES.ITEM, {
         item,
-        system: item.system,
+        system,
         config,
         label,
         enrichedLink,
-        enrichedDescription: await TextEditorImpl.enrichHTML(item.system.description || "", {
+        enrichedDescription: await TextEditorImpl.enrichHTML(system.description || "", {
             secrets: item.isOwner,
             rollData: item.getRollData?.() || {},
             relativeTo: item

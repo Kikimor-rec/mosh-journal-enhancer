@@ -186,7 +186,7 @@ export function log(message, data = null) {
         return;
     }
 
-    if (data) {
+    if (data !== null && data !== undefined) {
         console.log(`${MODULE_ID} | ${message}`, data);
     } else {
         console.log(`${MODULE_ID} | ${message}`);

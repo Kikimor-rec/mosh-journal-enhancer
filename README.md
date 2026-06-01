@@ -15,6 +15,7 @@
 A comprehensive Foundry VTT module for **Mothership RPG** that enhances Journal Entries with:
 - **Actor/Item Embeds** - Interactive statblocks and bio cards
 - **Custom Blocks** - Narrative boxes, warnings, terminal output, and more
+- **Native Editor Tools** - MOSH Blocks, Effects, Color, and Image controls in the ProseMirror toolbar
 - **Figure Tools** - Insert images, captions, float layout, size presets, and visual styles
 - **Light/Dark Theme Support** - Automatic adaptation to journal theme
 
@@ -97,7 +98,7 @@ Insert styled content blocks in your journals:
 ```
 
 ### Custom Blocks
-Use the **Blocks** button in the journal editor toolbar:
+Use the **Blocks** button in the native journal editor toolbar:
 
 1. Select text in the editor
 2. Click the "Blocks" button
@@ -110,6 +111,12 @@ Or paste HTML directly:
   <p>The corridor stretches into darkness...</p>
 </div>
 ```
+
+### Text Effects
+Use the **Effects** button in the native journal editor toolbar to apply inline effects to selected text. Effects and colors use ProseMirror-compatible inline markup as the primary path, with legacy DOM fallbacks only for compatibility. `Data Corruption` stays readable and marked while editing, then renders animated scrambled characters in journal view mode. Its runtime frame uses a separate visual layer, so text length stays tied to the original source and module colors can wrap the whole effect.
+
+Use the **Color** button to tint selected text with a compact palette derived from the current sheet/theme colors.
+When applying `Redacted`, the Effects dialog also offers a mask color palette so the hidden text remains visible against dark or light journal backgrounds.
 
 ### Image/Figure Workflow
 1. Open a journal page in edit mode.
@@ -145,7 +152,7 @@ Or paste HTML directly:
 | Component | Version |
 |-----------|---------|
 | Foundry VTT | v13-v14 |
-| [Mothership RPG System](https://github.com/Futil/foundry-mothership) | 0.6.0+ |
+| [Mothership RPG System](https://github.com/Futil/foundry-mothership) | 0.6.0-0.6.1 |
 
 Monk's Enhanced Journal is optional. The module does not depend on it or recommend it in the manifest, but it will detect it when active and adapt toolbar placement for Monk's journal editors.
 
@@ -155,7 +162,7 @@ Monk's Enhanced Journal is optional. The module does not depend on it or recomme
 
 | Setting | Scope | Default | Description |
 |---------|-------|---------|-------------|
-| Enable Editor Toolbar | Client | On | Adds MOSH Blocks and Image buttons to journal editor toolbars |
+| Enable Editor Toolbar | Client | On | Adds MOSH Blocks, Effects, Color, and Image buttons to journal editor toolbars |
 | Enable Custom Embeds | World | On | Replaces actor/item embed rendering with MOSH cards |
 | Enable Debug Logging | Client | Off | Writes toolbar/embed diagnostics to the browser console |
 
@@ -212,6 +219,7 @@ MIT License - See [LICENSE](LICENSE) for details.
 Комплексный модуль для **Mothership RPG** в Foundry VTT, улучшающий Журналы:
 - **Встраиваемые карточки** - Интерактивные статблоки и био-карточки
 - **Пользовательские блоки** - Нарратив, терминал, предупреждения и другое
+- **Нативные инструменты редактора** - MOSH Blocks, Effects, Color и Image в панели ProseMirror
 - **Инструменты изображений** - Вставка картинок, подписи, обтекание, размеры и визуальные стили
 - **Поддержка тем** - Автоматическая адаптация к светлой/тёмной теме
 
@@ -294,7 +302,7 @@ MIT License - See [LICENSE](LICENSE) for details.
 ```
 
 ### Пользовательские Блоки
-Используйте кнопку **Блоки** в панели редактора журнала:
+Используйте кнопку **Блоки** в нативной панели редактора журнала:
 
 1. Выделите текст в редакторе
 2. Нажмите кнопку "Блоки"
@@ -307,6 +315,12 @@ MIT License - See [LICENSE](LICENSE) for details.
   <p>Коридор уходит во тьму...</p>
 </div>
 ```
+
+### Текстовые эффекты
+Используйте кнопку **Effects** в нативной панели редактора журнала, чтобы применить inline-эффекты к выделенному тексту. Эффекты и цвета используют совместимую с ProseMirror inline-разметку как основной путь, а старые DOM fallback-механизмы остаются только для совместимости. `Повреждение данных` остается читаемым и помеченным в редакторе, а в режиме просмотра журнала превращается в анимированные случайные символы. Визуальный слой отделен от исходного текста, поэтому длина соответствует оригиналу, а цвет модуля можно применить ко всему эффекту.
+
+Используйте кнопку **Color**, чтобы изменить цвет выделенного текста через компактную палитру, собранную из цветов текущего листа/темы.
+Для `Засекречено` в окне Effects также доступен выбор цвета заглушки, чтобы скрытый текст был заметен на темном или светлом фоне журнала.
 
 ### Работа с изображениями
 1. Откройте страницу журнала в режиме редактирования.
@@ -342,7 +356,7 @@ MIT License - See [LICENSE](LICENSE) for details.
 | Компонент | Версия |
 |-----------|--------|
 | Foundry VTT | v13-v14 |
-| [Mothership RPG System](https://github.com/Futil/foundry-mothership) | 0.6.0+ |
+| [Mothership RPG System](https://github.com/Futil/foundry-mothership) | 0.6.0-0.6.1 |
 
 Monk's Enhanced Journal не является зависимостью. Модуль не требует и не рекомендует его в manifest, но обнаруживает активный Monk's Enhanced Journal и адаптирует расположение кнопок в его редакторах.
 
@@ -352,7 +366,7 @@ Monk's Enhanced Journal не является зависимостью. Моду
 
 | Настройка | Описание | По умолчанию |
 |-----------|----------|--------------|
-| Панель инструментов | Добавить кнопки MOSH в редактор | ✓ Включено |
+| Панель инструментов | Добавить кнопки Blocks, Effects, Color и Image в редактор | ✓ Включено |
 | Кастомные вставки | Заменить отображение вставок актёров | ✓ Включено |
 | Debug Logging | Писать диагностические сообщения в консоль браузера | Выключено |
 

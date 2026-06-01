@@ -1,8 +1,17 @@
-<div class="mosh-panel-container journal-entry-content">
-    {{#each blocks}}
-    <div class="mosh-panel-item" data-type="{{type}}" data-class="{{className}}">
-        <div class="mosh-panel-label">{{label}}</div>
-        <div class="mosh-panel-preview">{{{preview}}}</div>
+<div class="mosh-panel-container mosh-block-panel-container journal-entry-content">
+    <div class="mosh-blocks-grid">
+        {{#each blocks}}
+        <div class="mosh-panel-item" data-type="{{type}}" data-class="{{className}}">
+            <div class="mosh-panel-label">{{label}}</div>
+            <div class="mosh-panel-preview">{{{preview}}}</div>
+            {{#if isPaper}}
+            <div class="mosh-paper-style-row">
+                {{#each paperVariants}}
+                <button type="button" class="mosh-paper-style-btn" data-modifier="{{modifier}}">{{label}}</button>
+                {{/each}}
+            </div>
+            {{/if}}
+        </div>
+        {{/each}}
     </div>
-    {{/each}}
 </div>
