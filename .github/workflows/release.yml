@@ -79,7 +79,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           name: "MOSH Journal Enhancer v${{ steps.version.outputs.version }}"
-          draft: true
+          tag: "v${{ steps.version.outputs.version }}"
+          draft: false
           prerelease: false
           allowUpdates: true
           bodyFile: RELEASE_NOTES.md
