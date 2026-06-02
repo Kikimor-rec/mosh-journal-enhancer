@@ -75,7 +75,7 @@ jobs:
             echo "- Download: https://github.com/Kikimor-rec/mosh-journal-enhancer/releases/download/v${version}/mosh-journal-enhancer-v${version}.zip"
           } > RELEASE_NOTES.md
 
-      - name: Create draft release
+      - name: Create release
         uses: ncipollo/release-action@v1
         with:
           name: "MOSH Journal Enhancer v${{ steps.version.outputs.version }}"

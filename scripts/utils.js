@@ -129,6 +129,139 @@ export function escapeHtml(value = "") {
     return temp.innerHTML;
 }
 
+const FIGURE_POSITIONS = new Set(["", "left", "right"]);
+const FIGURE_SIZES = new Set(["small", "medium", "large"]);
+const FIGURE_STYLES = new Set(["", "polaroid", "screen", "dossier", "blueprint"]);
+const FIGURE_PHOTO_EFFECTS = new Set(["", "aged", "bw", "faded"]);
+const FIGURE_INTENSITIES = new Set(["subtle", "default", "strong"]);
+const FIGURE_FILTER_STRENGTH = {
+    subtle: "0.65",
+    default: "1",
+    strong: "1.35"
+};
+const FIGURE_DEFAULT_ACCENTS = {
+    screen: "#00ff41",
+    blueprint: "#37d7ff",
+    dossier: "#d8b45a",
+    polaroid: "#d8c8a0"
+};
+
+/**
+ * Normalize figure settings used by preview, insertion, and toolbar updates.
+ * @param {object} settings - Raw figure settings
+ * @returns {object} Normalized figure settings
+ */
+export function normalizeFigureSettings(settings = {}) {
+    const style = FIGURE_STYLES.has(settings.style) ? settings.style : "";
+    const intensity = FIGURE_INTENSITIES.has(settings.intensity) ? settings.intensity : "default";
+    const photoEffect = FIGURE_PHOTO_EFFECTS.has(settings.photoEffect) ? settings.photoEffect : "";
+    return {
+        path: String(settings.path || ""),
+        caption: String(settings.caption || ""),
+        position: FIGURE_POSITIONS.has(settings.position) ? settings.position : "",
+        size: FIGURE_SIZES.has(settings.size) ? settings.size : "medium",
+        style,
+        accentColor: normalizeFigureColor(settings.accentColor) || FIGURE_DEFAULT_ACCENTS[style] || "",
+        photoEffect,
+        intensity,
+        filterStrength: FIGURE_FILTER_STRENGTH[intensity] || FIGURE_FILTER_STRENGTH.default
+    };
+}
+
+/**
+ * Build the persisted figure class list.
+ * @param {object} settings - Raw figure settings
+ * @returns {string[]} Figure CSS classes
+ */
+export function buildFigureClassList(settings = {}) {
+    const normalized = normalizeFigureSettings(settings);
+    const classes = ["mosh-figure"];
+    if (normalized.position) classes.push(`float-${normalized.position}`);
+    classes.push(`size-${normalized.size}`);
+    if (normalized.style) classes.push(`style-${normalized.style}`);
+    if ((normalized.style === "polaroid" || normalized.style === "dossier") && normalized.photoEffect) {
+        classes.push(`photo-${normalized.photoEffect}`);
+    }
+    return classes;
+}
+
+/**
+ * Build persisted CSS variables for a figure.
+ * @param {object} settings - Raw figure settings
+ * @returns {string} Inline style text
+ */
+export function buildFigureStyleText(settings = {}) {
+    const normalized = normalizeFigureSettings(settings);
+    if (!normalized.style) return "";
+
+    const styles = [`--mosh-figure-filter-strength: ${normalized.filterStrength}`];
+    if (normalized.accentColor) styles.unshift(`--mosh-figure-accent: ${normalized.accentColor}`);
+    return styles.join("; ");
+}
+
+/**
+ * Build a persisted figure HTML string.
+ * @param {object} settings - Raw figure settings
+ * @param {object} options - Extra attributes
+ * @returns {string} Figure HTML
+ */
+export function buildFigureHTML(settings = {}, { marker = "" } = {}) {
+    const normalized = normalizeFigureSettings(settings);
+    const classes = buildFigureClassList(normalized).map(escapeHtml).join(" ");
+    const styleText = buildFigureStyleText(normalized);
+    const markerAttr = marker ? ` data-mosh-figure-id="${escapeHtml(marker)}"` : "";
+    const styleAttr = styleText ? ` style="${escapeHtml(styleText)}"` : "";
+
+    let html = `<figure class="${classes}"${markerAttr}${styleAttr}>`;
+    html += `<img src="${escapeHtml(normalized.path)}" alt="${escapeHtml(normalized.caption)}" loading="lazy">`;
+    if (normalized.caption) html += `<figcaption>${escapeHtml(normalized.caption)}</figcaption>`;
+    html += "</figure>";
+    return html;
+}
+
+/**
+ * Parse existing figure settings from a rendered figure element.
+ * @param {HTMLElement} figure - Figure element
+ * @returns {object} Normalized figure settings
+ */
+export function parseFigureSettings(figure) {
+    const classList = figure?.classList;
+    const img = figure?.querySelector?.("img");
+    const style = classList?.contains("style-polaroid") ? "polaroid"
+        : classList?.contains("style-screen") ? "screen"
+            : classList?.contains("style-dossier") ? "dossier"
+                : classList?.contains("style-blueprint") ? "blueprint"
+                    : "";
+    const photoEffect = classList?.contains("photo-aged") ? "aged"
+        : classList?.contains("photo-bw") ? "bw"
+            : classList?.contains("photo-faded") ? "faded"
+                : "";
+    const strength = figure?.style?.getPropertyValue("--mosh-figure-filter-strength")?.trim();
+    const intensity = strength === FIGURE_FILTER_STRENGTH.subtle ? "subtle"
+        : strength === FIGURE_FILTER_STRENGTH.strong ? "strong"
+            : "default";
+
+    return normalizeFigureSettings({
+        path: img?.getAttribute("src") || "",
+        caption: figure?.querySelector?.("figcaption")?.textContent?.trim() || img?.getAttribute("alt") || "",
+        position: classList?.contains("float-left") ? "left" : classList?.contains("float-right") ? "right" : "",
+        size: classList?.contains("size-small") ? "small" : classList?.contains("size-large") ? "large" : "medium",
+        style,
+        accentColor: figure?.style?.getPropertyValue("--mosh-figure-accent")?.trim() || "",
+        photoEffect,
+        intensity
+    });
+}
+
+function normalizeFigureColor(value = "") {
+    const color = String(value || "").trim();
+    if (/^#[0-9a-f]{6}$/i.test(color)) return color.toLowerCase();
+    if (/^#[0-9a-f]{3}$/i.test(color)) {
+        return `#${color.slice(1).split("").map(char => char + char).join("")}`.toLowerCase();
+    }
+    return "";
+}
+
 /**
  * Check whether Monk's Enhanced Journal is active.
  * @returns {boolean}

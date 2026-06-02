@@ -1,50 +1,88 @@
 <div class="mosh-figure-dialog">
-    <div class="form-group">
-        <label>{{localize "MOSH.Figure.Browse"}}</label>
-        <div class="image-select">
-            <input type="text" class="figure-path" placeholder="{{localize "MOSH.Figure.PathPlaceholder"}}" value="">
-            <button type="button" class="browse-btn">
-                <i class="fas fa-folder-open"></i> {{localize "MOSH.Figure.Browse"}}
-            </button>
+    <div class="mosh-figure-dialog-body">
+        <div class="mosh-figure-settings">
+            <div class="form-group">
+                <label>{{localize "MOSH.Figure.Browse"}}</label>
+                <div class="image-select">
+                    <input type="text" class="figure-path" placeholder="{{localize "MOSH.Figure.PathPlaceholder"}}" value="">
+                    <button type="button" class="browse-btn">
+                        <i class="fas fa-folder-open"></i> {{localize "MOSH.Figure.Browse"}}
+                    </button>
+                </div>
+                <div class="figure-path-status">{{localize "MOSH.Figure.NoImage"}}</div>
+            </div>
+            
+            <div class="form-group">
+                <label>{{localize "MOSH.Figure.Position"}}</label>
+                <select class="figure-position">
+                    {{#each positions}}
+                        <option value="{{value}}">{{label}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>{{localize "MOSH.Figure.Size"}}</label>
+                <select class="figure-size">
+                    {{#each sizes}}
+                        <option value="{{value}}">{{label}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>{{localize "MOSH.Figure.Style"}}</label>
+                <select class="figure-style">
+                    {{#each styles}}
+                        <option value="{{value}}">{{label}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <div class="form-group figure-accent-section" hidden>
+                <label>{{localize "MOSH.Figure.AccentColor"}}</label>
+                <div class="figure-accent-controls">
+                    <div class="figure-accent-swatches">
+                        {{#each accentColors}}
+                            <button type="button" class="mosh-color-swatch figure-accent-swatch" data-color="{{value}}" title="{{label}}" style="background: {{value}}"></button>
+                        {{/each}}
+                    </div>
+                    <div class="figure-custom-color">
+                        <input type="color" class="figure-accent-picker" value="#00ff41">
+                        <input type="text" class="figure-accent-hex" value="#00ff41" inputmode="text" spellcheck="false">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group figure-photo-section" hidden>
+                <label>{{localize "MOSH.Figure.PhotoEffect"}}</label>
+                <select class="figure-photo-effect">
+                    {{#each photoEffects}}
+                        <option value="{{value}}">{{label}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <div class="form-group figure-intensity-section" hidden>
+                <label>{{localize "MOSH.Figure.Intensity"}}</label>
+                <select class="figure-intensity">
+                    {{#each intensities}}
+                        <option value="{{value}}">{{label}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>{{localize "MOSH.Figure.Caption"}}</label>
+                <input type="text" class="figure-caption" placeholder="{{localize "MOSH.Figure.CaptionPlaceholder"}}">
+            </div>
         </div>
-    </div>
-    
-    <div class="form-group">
-        <label>{{localize "MOSH.Figure.Position"}}</label>
-        <select class="figure-position">
-            <option value="">{{localize "MOSH.Figure.Inline"}}</option>
-            <option value="left">{{localize "MOSH.Figure.Left"}}</option>
-            <option value="right">{{localize "MOSH.Figure.Right"}}</option>
-        </select>
-    </div>
-    
-    <div class="form-group">
-        <label>{{localize "MOSH.Figure.Size"}}</label>
-        <select class="figure-size">
-            <option value="small">{{localize "MOSH.Figure.Small"}}</option>
-            <option value="medium" selected>{{localize "MOSH.Figure.Medium"}}</option>
-            <option value="large">{{localize "MOSH.Figure.Large"}}</option>
-        </select>
-    </div>
-    
-    <div class="form-group">
-        <label>{{localize "MOSH.Figure.Style"}}</label>
-        <select class="figure-style">
-            <option value="">{{localize "MOSH.Figure.Default"}}</option>
-            <option value="polaroid">{{localize "MOSH.Figure.Polaroid"}}</option>
-            <option value="screen">{{localize "MOSH.Figure.Screen"}}</option>
-        </select>
-    </div>
-    
-    <div class="form-group">
-        <label>{{localize "MOSH.Figure.Caption"}}</label>
-        <input type="text" class="figure-caption" placeholder="{{localize "MOSH.Figure.CaptionPlaceholder"}}">
-    </div>
-    
-    <div class="form-group">
-        <label>{{localize "MOSH.Dialog.Preview"}}</label>
-        <div class="mosh-figure-preview">
-            <div class="placeholder">{{localize "MOSH.Figure.NoImage"}}</div>
+
+        <div class="mosh-figure-preview-panel">
+            <label>{{localize "MOSH.Dialog.Preview"}}</label>
+            <div class="mosh-figure-preview">
+                <div class="placeholder">{{localize "MOSH.Figure.NoImage"}}</div>
+            </div>
         </div>
     </div>
     

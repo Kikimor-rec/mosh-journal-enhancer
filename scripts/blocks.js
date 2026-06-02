@@ -4,7 +4,7 @@
  */
 
 import { BLOCK_TYPES } from "./config.js";
-import { localize, sanitizeHtml, escapeHtml, log } from "./utils.js";
+import { buildFigureHTML, localize, sanitizeHtml, escapeHtml, log } from "./utils.js";
 
 /**
  * Generate HTML for a block
@@ -59,29 +59,7 @@ export function generateBlockHTML(type, content = "", options = {}) {
  * @returns {string} The generated HTML
  */
 export function generateFigureHTML(imageSrc, options = {}) {
-    const { 
-        position = "", 
-        size = "medium", 
-        style = "", 
-        caption = "" 
-    } = options;
-    
-    // Build class list
-    const classes = ["mosh-figure"];
-    if (position === "left" || position === "right") classes.push(`float-${position}`);
-    classes.push(size === "small" || size === "large" ? `size-${size}` : "size-medium");
-    if (style === "polaroid" || style === "screen") classes.push(`style-${style}`);
-    
-    let html = `<figure class="${classes.map(escapeHtml).join(" ")}">`;
-    html += `<img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(caption)}" loading="lazy">`;
-    
-    if (caption) {
-        html += `<figcaption>${escapeHtml(caption)}</figcaption>`;
-    }
-    
-    html += "</figure>";
-    
-    return html;
+    return buildFigureHTML({ ...options, path: imageSrc });
 }
 
 /**

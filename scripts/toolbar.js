@@ -4,7 +4,7 @@
  */
 
 import { MODULE_ID } from "./config.js";
-import { localize, escapeHtml, isMonksEnhancedJournalActive, log, logError } from "./utils.js";
+import { buildFigureHTML, escapeHtml, isMonksEnhancedJournalActive, localize, log, logError, normalizeFigureSettings, parseFigureSettings } from "./utils.js";
 import { MoshBlockPanel, MoshFigureDialog, MoshTextColorPanel, MoshTextEffectPanel } from "./dialogs-v2.js";
 
 let toolbarHooksRegistered = false;
@@ -355,7 +355,7 @@ function addMoshToolbarButton(toolbar, editorElement) {
     imageBtn.addEventListener("click", event => {
         event.preventDefault();
         event.stopPropagation();
-        openFigureDialog({ editor: editorElement, range: lastSelectionRange });
+        openFigureDialog({ editor: editorElement, range: lastSelectionRange, pmView: getProseMirrorView(editorElement) });
     });
 
     group.append(blocksBtn, effectsBtn, colorBtn, imageBtn);
@@ -521,9 +521,11 @@ function openFigureDialog(options = {}) {
 
     new MoshFigureDialog(range, null, null, {
         editor,
+        pmView: options.pmView || getProseMirrorView(editor),
         onInsert: (settings, insertOptions = {}) => insertFigure(settings, {
             editor: insertOptions.editor || editor,
-            range: insertOptions.range || range
+            range: insertOptions.range || range,
+            pmView: insertOptions.pmView || options.pmView || getProseMirrorView(editor)
         })
     }).render(true);
 }
@@ -753,21 +755,14 @@ export function insertFigure(settings = {}, options = {}) {
         return false;
     }
 
-    const classes = ["mosh-figure"];
-    if (settings.position) classes.push(`float-${settings.position}`);
-    if (settings.size) classes.push(`size-${settings.size}`);
-    if (settings.style) classes.push(`style-${settings.style}`);
-
-    let figureHTML = `<figure class="${classes.map(escapeHtml).join(" ")}">`;
-    figureHTML += `<img src="${escapeHtml(path)}" alt="${escapeHtml(settings.caption || "")}" loading="lazy">`;
-    if (settings.caption) figureHTML += `<figcaption>${escapeHtml(settings.caption)}</figcaption>`;
-    figureHTML += "</figure>";
+    const figureHTML = buildFigureHTML({ ...settings, path });
 
     const editor = getActiveEditor(options.editor);
     if (editor && options.pmView) proseMirrorViewsByEditor.set(editor, options.pmView);
     const inserted = insertHTMLIntoActiveEditor(figureHTML, {
         editor,
-        range: options.range || lastSelectionRange
+        range: options.range || lastSelectionRange,
+        pmView: options.pmView
     });
 
     if (inserted) ui.notifications.info(`${localize("MOSH.Blocks.Figure")} ${localize("MOSH.Dialog.Inserted")}`);
@@ -777,18 +772,19 @@ export function insertFigure(settings = {}, options = {}) {
 /**
  * Shared HTML insertion helper for Foundry ProseMirror editors.
  */
-export function insertHTMLIntoActiveEditor(html, { range = null, editor = null, preferRange = false } = {}) {
+export function insertHTMLIntoActiveEditor(html, { range = null, editor = null, pmView = null, preferRange = false } = {}) {
     const targetEditor = getActiveEditor(editor);
     if (!targetEditor) {
         ui.notifications.error(localize("MOSH.Dialog.NoEditor"));
         return false;
     }
 
+    if (pmView) proseMirrorViewsByEditor.set(targetEditor, pmView);
     targetEditor.focus();
     restoreRange(range, targetEditor);
 
     try {
-        const pmInserted = insertHTMLThroughProseMirror(html, targetEditor, range);
+        const pmInserted = insertHTMLThroughProseMirror(html, targetEditor, range, pmView);
         if (pmInserted) return true;
     } catch (error) {
         logError("ProseMirror transaction insertHTML failed, trying editor fallbacks", error);
@@ -836,33 +832,29 @@ export function insertHTMLIntoActiveEditor(html, { range = null, editor = null, 
     }
 }
 
-function insertHTMLThroughProseMirror(html, editor, range = null) {
-    const pmView = getProseMirrorView(editor);
-    const parser = globalThis.ProseMirror?.dom?.parseString;
-    if (!pmView?.state?.schema || typeof parser !== "function") return false;
+function insertHTMLThroughProseMirror(html, editor, range = null, providedView = null) {
+    const pmView = providedView || getProseMirrorView(editor);
+    const DOMParserClass = globalThis.ProseMirror?.DOMParser;
+    if (!pmView?.state?.schema || !DOMParserClass?.fromSchema) return false;
 
-    const parsed = parser(html, pmView.state.schema);
-    if (!parsed?.type) {
-        log("ProseMirror transaction insertHTML skipped non-node parse result", {
-            html,
-            parsedType: parsed?.constructor?.name || typeof parsed
-        });
+    const container = document.createElement("div");
+    container.innerHTML = html;
+    const parser = DOMParserClass.fromSchema(pmView.state.schema);
+    const slice = parser.parseSlice(container, { preserveWhitespace: true });
+    if (!slice?.content?.size) {
+        log("ProseMirror transaction insertHTML skipped empty parse result", { html });
         return false;
     }
 
-    const tr = pmView.state.tr;
     const positions = getProseMirrorPositionsFromRange(pmView, range);
-    if (positions) {
-        tr.replaceWith(positions.from, positions.to, parsed);
-    } else {
-        tr.replaceSelectionWith(parsed);
-    }
-
+    const tr = pmView.state.tr;
+    if (positions) tr.replaceRange(positions.from, positions.to, slice);
+    else tr.replaceSelection(slice);
     pmView.dispatch(tr.scrollIntoView());
     window.setTimeout(pmView.focus.bind(pmView), 0);
     notifyEditorChanged(editor);
     log("ProseMirror transaction insertHTML", {
-        nodeType: parsed.type.name,
+        sliceSize: slice.content.size,
         from: positions?.from,
         to: positions?.to,
         html
@@ -1669,6 +1661,8 @@ function showFigureToolbar(figureElement) {
             <button type="button" class="toolbar-btn" data-action="style" data-value="default" title="${escapeHtml(localize("MOSH.Figure.Default"))}"><i class="fas fa-square"></i></button>
             <button type="button" class="toolbar-btn" data-action="style" data-value="polaroid" title="${escapeHtml(localize("MOSH.Figure.Polaroid"))}"><i class="fas fa-camera"></i></button>
             <button type="button" class="toolbar-btn" data-action="style" data-value="screen" title="${escapeHtml(localize("MOSH.Figure.Screen"))}"><i class="fas fa-tv"></i></button>
+            <button type="button" class="toolbar-btn" data-action="style" data-value="dossier" title="${escapeHtml(localize("MOSH.Figure.Dossier"))}"><i class="fas fa-folder-open"></i></button>
+            <button type="button" class="toolbar-btn" data-action="style" data-value="blueprint" title="${escapeHtml(localize("MOSH.Figure.Blueprint"))}"><i class="fas fa-drafting-compass"></i></button>
         </div>
         <div class="mosh-figure-toolbar-separator"></div>
         <div class="mosh-figure-toolbar-section">
@@ -1722,7 +1716,9 @@ function updateToolbarButtons(figure, toolbar) {
     });
 
     const currentStyle = figure.classList.contains("style-polaroid") ? "polaroid" :
-        figure.classList.contains("style-screen") ? "screen" : "default";
+        figure.classList.contains("style-screen") ? "screen" :
+            figure.classList.contains("style-dossier") ? "dossier" :
+                figure.classList.contains("style-blueprint") ? "blueprint" : "default";
     toolbar.querySelectorAll("[data-action='style']").forEach(button => {
         button.classList.toggle("active", button.dataset.value === currentStyle);
     });
@@ -1747,7 +1743,9 @@ function handleToolbarAction(figure, action, value) {
     let currentSize = figure.classList.contains("size-small") ? "small" :
         figure.classList.contains("size-large") ? "large" : "medium";
     let currentStyle = figure.classList.contains("style-polaroid") ? "polaroid" :
-        figure.classList.contains("style-screen") ? "screen" : "default";
+        figure.classList.contains("style-screen") ? "screen" :
+            figure.classList.contains("style-dossier") ? "dossier" :
+                figure.classList.contains("style-blueprint") ? "blueprint" : "default";
 
     if (action === "position") currentPosition = value;
     if (action === "size") currentSize = value;
@@ -1785,7 +1783,7 @@ function buildFigureClasses({ position = "inline", size = "medium", style = "def
     const classes = ["mosh-figure"];
     if (position === "left" || position === "right") classes.push(`float-${position}`);
     classes.push(size === "small" || size === "large" ? `size-${size}` : "size-medium");
-    if (style === "polaroid" || style === "screen") classes.push(`style-${style}`);
+    if (style === "polaroid" || style === "screen" || style === "dossier" || style === "blueprint") classes.push(`style-${style}`);
     return classes;
 }
 
@@ -1820,16 +1818,29 @@ function deleteFigureThroughEditor(figure, editor) {
 
 function buildFigureHTMLFromElement(figure, classes, marker = "") {
     const img = figure.querySelector("img");
-    const caption = figure.querySelector("figcaption")?.textContent?.trim() || "";
-    const attrs = marker ? ` data-mosh-figure-id="${escapeHtml(marker)}"` : "";
+    const current = parseFigureSettings(figure);
+    const next = normalizeFigureSettings({
+        ...current,
+        path: img?.getAttribute("src") || current.path,
+        caption: figure.querySelector("figcaption")?.textContent?.trim() || img?.getAttribute("alt") || "",
+        ...figureSettingsFromClasses(classes)
+    });
 
-    let html = `<figure class="${classes.map(escapeHtml).join(" ")}"${attrs}>`;
-    if (img) {
-        html += `<img src="${escapeHtml(img.getAttribute("src") || "")}" alt="${escapeHtml(img.getAttribute("alt") || "")}" loading="${escapeHtml(img.getAttribute("loading") || "lazy")}">`;
-    }
-    if (caption) html += `<figcaption>${escapeHtml(caption)}</figcaption>`;
-    html += "</figure>";
-    return html;
+    return buildFigureHTML(next, { marker });
+}
+
+function figureSettingsFromClasses(classes = []) {
+    const classSet = new Set(classes);
+    return {
+        position: classSet.has("float-left") ? "left" : classSet.has("float-right") ? "right" : "",
+        size: classSet.has("size-small") ? "small" : classSet.has("size-large") ? "large" : "medium",
+        style: classSet.has("style-polaroid") ? "polaroid"
+            : classSet.has("style-screen") ? "screen"
+                : classSet.has("style-dossier") ? "dossier"
+                    : classSet.has("style-blueprint") ? "blueprint"
+                        : "",
+        photoEffect: classSet.has("photo-aged") ? "aged" : classSet.has("photo-bw") ? "bw" : classSet.has("photo-faded") ? "faded" : ""
+    };
 }
 
 function hideFigureToolbar() {

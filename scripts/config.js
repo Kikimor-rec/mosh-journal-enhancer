@@ -4,7 +4,7 @@
  */
 
 export const MODULE_ID = "mosh-journal-enhancer";
-export const MODULE_VERSION = "1.1.0";
+export const MODULE_VERSION = "1.1.1";
 
 // Template paths
 export const TEMPLATES = {
@@ -101,6 +101,25 @@ export const FIGURE_OPTIONS = {
     styles: [
         { value: "", label: "MOSH.Figure.Default" },
         { value: "polaroid", label: "MOSH.Figure.Polaroid" },
-        { value: "screen", label: "MOSH.Figure.Screen" }
+        { value: "screen", label: "MOSH.Figure.Screen" },
+        { value: "dossier", label: "MOSH.Figure.Dossier" },
+        { value: "blueprint", label: "MOSH.Figure.Blueprint" }
+    ],
+    accentColors: [
+        { value: "#00ff41", label: "MOSH.Figure.AccentGreen" },
+        { value: "#37d7ff", label: "MOSH.Figure.AccentCyan" },
+        { value: "#ffb000", label: "MOSH.Figure.AccentAmber" },
+        { value: "#ff3355", label: "MOSH.Figure.AccentRed" }
+    ],
+    photoEffects: [
+        { value: "", label: "MOSH.Figure.PhotoNone" },
+        { value: "aged", label: "MOSH.Figure.PhotoAged" },
+        { value: "bw", label: "MOSH.Figure.PhotoBW" },
+        { value: "faded", label: "MOSH.Figure.PhotoFaded" }
+    ],
+    intensities: [
+        { value: "subtle", label: "MOSH.Figure.IntensitySubtle" },
+        { value: "default", label: "MOSH.Figure.IntensityDefault" },
+        { value: "strong", label: "MOSH.Figure.IntensityStrong" }
     ]
-};                                                                                                                                                                                                                                                                                                                                                                                              
+};

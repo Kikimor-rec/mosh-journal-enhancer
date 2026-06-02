@@ -2,8 +2,8 @@
  * MOSH Journal Enhancer - ApplicationV2 Dialogs
  */
 
-import { MODULE_ID, BLOCK_TYPES, TEXT_EFFECTS } from "./config.js";
-import { localize, log, logError } from "./utils.js";
+import { MODULE_ID, BLOCK_TYPES, TEXT_EFFECTS, FIGURE_OPTIONS } from "./config.js";
+import { buildFigureClassList, buildFigureStyleText, localize, log, logError, normalizeFigureSettings, parseFigureSettings } from "./utils.js";
 
 /**
  * Block Panel - ApplicationV2 with Handlebars
@@ -112,11 +112,11 @@ export class MoshTextEffectPanel extends foundry.applications.api.HandlebarsAppl
         id: "mosh-effect-panel",
         window: {
             title: "MOSH.Effects.DialogTitle",
-            resizable: false
+            resizable: true
         },
         position: {
-            width: 360,
-            height: "auto"
+            width: 420,
+            height: 520
         },
         classes: ["mosh-effect-panel"]
     };
@@ -265,22 +265,26 @@ export class MoshTextColorPanel extends foundry.applications.api.HandlebarsAppli
  */
 export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.api.ApplicationV2) {
     constructor(insertRange, existingFigure = null, initialSettings = null, options = {}) {
-        const { editor = null, onInsert = null, ...appOptions } = options;
+        const { editor = null, pmView = null, onInsert = null, ...appOptions } = options;
         super(appOptions);
         this.insertRange = insertRange;
         this.editor = editor;
+        this.pmView = pmView;
         this.onInsert = onInsert;
         this.existingFigure = existingFigure; // For edit mode
         this.isEditMode = !!existingFigure;
         
         // Initialize settings
-        this.figureSettings = initialSettings || {
+        this.figureSettings = normalizeFigureSettings(initialSettings || (existingFigure ? parseFigureSettings(existingFigure) : {
             path: "",
             position: "",
             size: "medium",
             style: "",
-            caption: ""
-        };
+            caption: "",
+            accentColor: "",
+            photoEffect: "",
+            intensity: "default"
+        }));
     }
     
     static DEFAULT_OPTIONS = {
@@ -290,8 +294,8 @@ export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplica
             resizable: true
         },
         position: {
-            width: 540,
-            height: 600
+            width: 880,
+            height: 680
         },
         classes: ["mosh-figure-dialog-app"]
     };
@@ -304,7 +308,13 @@ export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplica
     
     async _prepareContext(options) {
         return {
-            isEditMode: this.isEditMode
+            isEditMode: this.isEditMode,
+            positions: localizeFigureOptions(FIGURE_OPTIONS.positions),
+            sizes: localizeFigureOptions(FIGURE_OPTIONS.sizes),
+            styles: localizeFigureOptions(FIGURE_OPTIONS.styles),
+            accentColors: localizeFigureOptions(FIGURE_OPTIONS.accentColors),
+            photoEffects: localizeFigureOptions(FIGURE_OPTIONS.photoEffects),
+            intensities: localizeFigureOptions(FIGURE_OPTIONS.intensities)
         };
     }
     
@@ -312,10 +322,18 @@ export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplica
         const html = this.element;
         
         const pathInput = html.querySelector('.figure-path');
+        const pathStatus = html.querySelector('.figure-path-status');
         const browseBtn = html.querySelector('.browse-btn');
         const positionSelect = html.querySelector('.figure-position');
         const sizeSelect = html.querySelector('.figure-size');
         const styleSelect = html.querySelector('.figure-style');
+        const accentSection = html.querySelector('.figure-accent-section');
+        const accentPicker = html.querySelector('.figure-accent-picker');
+        const accentHexInput = html.querySelector('.figure-accent-hex');
+        const photoSection = html.querySelector('.figure-photo-section');
+        const intensitySection = html.querySelector('.figure-intensity-section');
+        const photoSelect = html.querySelector('.figure-photo-effect');
+        const intensitySelect = html.querySelector('.figure-intensity');
         const captionInput = html.querySelector('.figure-caption');
         const preview = html.querySelector('.mosh-figure-preview');
         const insertBtn = html.querySelector('.insert-btn');
@@ -334,6 +352,12 @@ export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplica
         if (this.figureSettings.style) {
             styleSelect.value = this.figureSettings.style;
         }
+        if (this.figureSettings.photoEffect) {
+            photoSelect.value = this.figureSettings.photoEffect;
+        }
+        if (this.figureSettings.intensity) {
+            intensitySelect.value = this.figureSettings.intensity;
+        }
         if (this.figureSettings.caption) {
             captionInput.value = this.figureSettings.caption;
         }
@@ -344,12 +368,40 @@ export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplica
         }
         
         const updatePreview = () => {
+            this.figureSettings = normalizeFigureSettings(this.figureSettings);
+            accentSection.hidden = !usesFigureAccent(this.figureSettings.style);
+            photoSection.hidden = !usesFigurePhotoEffect(this.figureSettings.style);
+            intensitySection.hidden = !this.figureSettings.style;
+            pathStatus.classList.remove("valid", "error");
+
+            const activeColor = normalizeColor(this.figureSettings.accentColor) || "#00ff41";
+            accentPicker.value = activeColor;
+            accentHexInput.value = activeColor.toUpperCase();
+
+            html.querySelectorAll(".figure-accent-swatch").forEach(button => {
+                button.classList.toggle("active", button.dataset.color?.toLowerCase() === this.figureSettings.accentColor);
+            });
+
             if (!this.figureSettings.path) {
+                pathStatus.textContent = localize("MOSH.Figure.NoImage");
                 preview.replaceChildren(createPlaceholder(localize("MOSH.Figure.NoImage")));
                 return;
             }
-            
-            preview.replaceChildren(createFigurePreviewElement(this.figureSettings));
+
+            pathStatus.textContent = this.figureSettings.path;
+            pathStatus.classList.add("valid");
+            preview.replaceChildren(createFigurePreviewElement(this.figureSettings, {
+                onLoad: () => {
+                    pathStatus.textContent = this.figureSettings.path;
+                    pathStatus.classList.remove("error");
+                    pathStatus.classList.add("valid");
+                },
+                onError: () => {
+                    pathStatus.textContent = `${localize("MOSH.Dialog.InsertError")}: ${this.figureSettings.path}`;
+                    pathStatus.classList.remove("valid");
+                    pathStatus.classList.add("error");
+                }
+            }));
         };
         
         // Initial preview
@@ -388,6 +440,46 @@ export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplica
         
         styleSelect.addEventListener('change', () => {
             this.figureSettings.style = styleSelect.value;
+            this.figureSettings = normalizeFigureSettings({
+                ...this.figureSettings,
+                photoEffect: usesFigurePhotoEffect(styleSelect.value) ? this.figureSettings.photoEffect : ""
+            });
+            photoSelect.value = this.figureSettings.photoEffect;
+            intensitySelect.value = this.figureSettings.intensity;
+            updatePreview();
+        });
+
+        html.querySelectorAll(".figure-accent-swatch").forEach(button => {
+            button.addEventListener("click", () => {
+                this.figureSettings.accentColor = button.dataset.color || "";
+                updatePreview();
+            });
+        });
+
+        accentPicker.addEventListener('input', () => {
+            this.figureSettings.accentColor = accentPicker.value;
+            updatePreview();
+        });
+
+        accentHexInput.addEventListener('input', () => {
+            const color = normalizeColor(accentHexInput.value);
+            if (!color) {
+                accentHexInput.classList.add("invalid");
+                return;
+            }
+
+            accentHexInput.classList.remove("invalid");
+            this.figureSettings.accentColor = color;
+            updatePreview();
+        });
+
+        photoSelect.addEventListener('change', () => {
+            this.figureSettings.photoEffect = photoSelect.value;
+            updatePreview();
+        });
+
+        intensitySelect.addEventListener('change', () => {
+            this.figureSettings.intensity = intensitySelect.value;
             updatePreview();
         });
         
@@ -403,12 +495,8 @@ export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplica
                 return;
             }
             
-            if (this.isEditMode) {
-                this.updateFigure();
-            } else {
-                this.insertFigure();
-            }
-            this.close();
+            const success = this.isEditMode ? this.updateFigure() : this.insertFigure();
+            if (success) this.close();
         });
         
         // Cancel button
@@ -420,16 +508,24 @@ export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplica
     insertFigure() {
         try {
             if (this.onInsert) {
-                this.onInsert({ ...this.figureSettings }, { editor: this.editor, range: this.insertRange });
-                return;
+                return !!this.onInsert({ ...this.figureSettings }, {
+                    editor: this.editor,
+                    range: this.insertRange,
+                    pmView: this.pmView
+                });
             }
 
             const api = game.modules.get(MODULE_ID)?.api;
             if (!api?.insertFigure) throw new Error("MOSH insertFigure API is not available");
-            api.insertFigure({ ...this.figureSettings }, { editor: this.editor, range: this.insertRange });
+            return !!api.insertFigure({ ...this.figureSettings }, {
+                editor: this.editor,
+                range: this.insertRange,
+                pmView: this.pmView
+            });
         } catch (error) {
             logError("Figure insert failed", error);
             ui.notifications.error(`${localize("MOSH.Dialog.InsertError")}: ${error.message}`);
+            return false;
         }
     }
     
@@ -438,17 +534,14 @@ export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplica
         
         if (!this.existingFigure) {
             logError("No existing figure to update");
-            return;
+            return false;
         }
         
-        // Build new class name
-        let className = 'mosh-figure';
-        if (this.figureSettings.position) className += ` float-${this.figureSettings.position}`;
-        if (this.figureSettings.size) className += ` size-${this.figureSettings.size}`;
-        if (this.figureSettings.style) className += ` style-${this.figureSettings.style}`;
-        
-        // Update classes
-        this.existingFigure.className = className;
+        const normalized = normalizeFigureSettings(this.figureSettings);
+        this.existingFigure.className = buildFigureClassList(normalized).join(" ");
+        const styleText = buildFigureStyleText(normalized);
+        if (styleText) this.existingFigure.setAttribute("style", styleText);
+        else this.existingFigure.removeAttribute("style");
         
         // Update image
         const img = this.existingFigure.querySelector('img');
@@ -472,6 +565,7 @@ export class MoshFigureDialog extends foundry.applications.api.HandlebarsApplica
         
         ui.notifications.info(`${localize("MOSH.Blocks.Figure")} ${localize("MOSH.Figure.Updated")}`);
         log("Figure updated successfully");
+        return true;
     }
 }
 
@@ -482,16 +576,18 @@ function createPlaceholder(text) {
     return placeholder;
 }
 
-function createFigurePreviewElement(settings) {
+function createFigurePreviewElement(settings, { onLoad = null, onError = null } = {}) {
     const figure = document.createElement("figure");
     figure.classList.add("mosh-figure");
-    if (settings.position) figure.classList.add(`float-${settings.position}`);
-    if (settings.size) figure.classList.add(`size-${settings.size}`);
-    if (settings.style) figure.classList.add(`style-${settings.style}`);
+    figure.className = buildFigureClassList(settings).join(" ");
+    const styleText = buildFigureStyleText(settings);
+    if (styleText) figure.setAttribute("style", styleText);
 
     const img = document.createElement("img");
     img.src = settings.path;
     img.alt = settings.caption || "";
+    if (onLoad) img.addEventListener("load", onLoad, { once: true });
+    if (onError) img.addEventListener("error", onError, { once: true });
     figure.appendChild(img);
 
     if (settings.caption) {
@@ -501,6 +597,21 @@ function createFigurePreviewElement(settings) {
     }
 
     return figure;
+}
+
+function localizeFigureOptions(options = []) {
+    return options.map(option => ({
+        ...option,
+        label: localize(option.label)
+    }));
+}
+
+function usesFigureAccent(style) {
+    return style === "screen" || style === "blueprint";
+}
+
+function usesFigurePhotoEffect(style) {
+    return style === "polaroid" || style === "dossier";
 }
 
 function normalizeColor(value) {

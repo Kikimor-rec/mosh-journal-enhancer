@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-06-02
+
+### Added
+
+- Added custom accent color controls for figure styles that use terminal/technical colors.
+
+### Changed
+
+- Reworked the image insertion dialog into a resizable two-column layout with a non-cropping live preview and clearer image path status.
+- Strengthened the screen/monitor figure glow so the terminal halo is visible around the outer frame and responds to intensity.
+
+### Fixed
+
+- Fixed Foundry journal edit buttons and vertical scrolling by removing broad layout overrides from Foundry-owned journal containers.
+- Fixed image insertion so the dialog only closes after a successful insert/update and the ProseMirror insertion path keeps the captured editor view.
+- Fixed long text effect wrapping for journal view mode while keeping dynamic typewriter/corruption runtime outside active ProseMirror editing.
+- Fixed figure preview sizing so selected small/medium/large sizes are respected without clipping the image.
+
 ## [1.1.0] - 2026-06-01
 
 ### Added
@@ -121,12 +139,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Description |
 |---------|------|-------------|
+| 1.1.1 | 2026-06-02 | Image dialog UX, figure insertion, screen glow, journal layout and text effect regressions |
 | 1.1.0 | 2026-06-01 | ProseMirror-native toolbar, stable corrupted text, color/effect stacking, figure persistence |
 | 1.0.2 | 2026-05-30 | Foundry v14 compatibility, optional Monk's support, toolbar restoration |
 | 1.0.1 | 2026-05-21 | Foundry v13/v14 stabilization and Monk's Enhanced Journal compatibility |
 | 1.0.0 | 2026-01-03 | Initial public release |
 
-[Unreleased]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/Kikimor-rec/mosh-journal-enhancer/compare/v1.0.0...v1.0.1

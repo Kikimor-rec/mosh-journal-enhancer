@@ -9,6 +9,7 @@ const CORRUPTION_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&@!?/\\<>[]{}";
 const EFFECT_EVENT = "mosh-journal-enhancer:apply-corruption";
 
 const corruptionEffects = new Map();
+const typewriterEffects = new Map();
 
 let effectsRuntimeRegistered = false;
 let corruptionIdCounter = 0;
@@ -41,11 +42,93 @@ export function applyTextEffects(app, html) {
     if (!root) return;
 
     root.querySelectorAll?.(".mosh-fx-typewriter").forEach(element => {
-        const text = element.textContent || "";
-        element.style.setProperty("--mosh-char-count", Math.max(text.length, 1).toString());
+        applyTypewriterEffect(element);
     });
 
     applyCorruptionEffects(root);
+}
+
+function applyTypewriterEffect(element) {
+    if (!(element instanceof HTMLElement)) return;
+
+    if (isEditableTextEffectElement(element)) {
+        stopTypewriterEffectForElement(element, { restore: true });
+        element.classList.remove("mosh-fx-typewriter-active", "mosh-fx-typewriter-complete");
+        return;
+    }
+
+    if (typewriterEffects.has(element) || element.classList.contains("mosh-fx-typewriter-complete")) return;
+
+    const original = element.dataset.moshText || element.textContent || "";
+    if (!element.dataset.moshText) element.dataset.moshText = original;
+
+    const characters = Array.from(original);
+    const state = {
+        element,
+        original,
+        characters,
+        index: 0,
+        intensity: getTypewriterIntensity(element),
+        timer: null
+    };
+
+    typewriterEffects.set(element, state);
+    element.classList.add("mosh-fx-typewriter-active");
+    element.classList.remove("mosh-fx-typewriter-complete");
+    element.textContent = "";
+    scheduleTypewriterTick(state, 0);
+}
+
+function tickTypewriterEffect(state) {
+    const { element, characters } = state;
+    if (!element.isConnected || !element.classList.contains("mosh-fx-typewriter") || isEditableTextEffectElement(element)) {
+        stopTypewriterEffect(state, { restore: true });
+        return;
+    }
+
+    state.intensity = getTypewriterIntensity(element);
+    state.index += 1;
+    element.textContent = characters.slice(0, state.index).join("");
+
+    if (state.index >= characters.length) {
+        stopTypewriterEffect(state, { complete: true });
+        return;
+    }
+
+    scheduleTypewriterTick(state, getTypewriterDelay(state.intensity));
+}
+
+function scheduleTypewriterTick(state, delay) {
+    window.clearTimeout(state.timer);
+    state.timer = window.setTimeout(() => tickTypewriterEffect(state), Math.max(0, delay));
+}
+
+function stopTypewriterEffect(state, { restore = false, complete = false } = {}) {
+    window.clearTimeout(state.timer);
+    typewriterEffects.delete(state.element);
+
+    if (restore) state.element.textContent = state.original;
+    if (complete) {
+        state.element.textContent = state.original;
+        state.element.classList.add("mosh-fx-typewriter-complete");
+    }
+
+    state.element.classList.remove("mosh-fx-typewriter-active");
+}
+
+function stopTypewriterEffectForElement(element, options = {}) {
+    const state = typewriterEffects.get(element);
+    if (state) stopTypewriterEffect(state, options);
+}
+
+function getTypewriterIntensity(element) {
+    const raw = element.dataset.moshEffectIntensity || element.style.getPropertyValue("--mosh-fx-intensity") || "2";
+    const intensity = Number(raw);
+    return Number.isFinite(intensity) && intensity > 0 ? Math.min(3, Math.max(1, intensity)) : 2;
+}
+
+function getTypewriterDelay(intensity) {
+    return Math.round(95 - ((intensity - 1) * 25));
 }
 
 /**
@@ -189,6 +272,10 @@ function randomCorruptionChar() {
 }
 
 function isEditableCorruptionElement(element) {
+    return isEditableTextEffectElement(element);
+}
+
+function isEditableTextEffectElement(element) {
     return !!element.closest?.(".ProseMirror[contenteditable='true'], [contenteditable='true']");
 }
 
